@@ -27,7 +27,7 @@
   --primary-light:#064e3b;--primary-50:#022c22;--danger-light:#7f1d1d;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-anchor:none}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
 button{font-family:inherit;cursor:pointer;border:0;background:transparent}
 input,select,textarea{font-family:inherit;font-size:14px}
 img{max-width:100%;display:block}
@@ -100,7 +100,7 @@ h3{font-size:16px;font-weight:700}
 .carousel-item .noimg{width:100%;height:90px;border-radius:var(--r-sm);background:var(--bg-soft);display:flex;align-items:center;justify-content:center;font-size:36px;color:var(--muted-soft)}
 .carousel-item h5{font-size:12px;font-weight:700;margin:8px 4px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .carousel-item .cp{font-size:14px;font-weight:800;color:var(--primary);margin-bottom:8px}
-.cartbar{position:fixed;bottom:20px;left:16px;right:16px;max-width:860px;margin:0 auto;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:14px 20px;border-radius:var(--r-lg);display:flex;justify-content:space-between;align-items:center;box-shadow:0 12px 32px rgba(16,185,129,0.4);cursor:pointer;font-weight:800;z-index:30;animation:slideUp 0.3s ease}
+.cartbar{position:fixed;bottom:20px;left:16px;right:16px;max-width:860px;margin:0 auto;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:14px 20px;border-radius:var(--r-lg);display:flex;justify-content:space-between;align-items:center;box-shadow:0 12px 32px rgba(16,185,129,0.4);cursor:pointer;font-weight:800;z-index:30}
 .cartbar .cart-info{display:flex;align-items:center;gap:10px}
 .cartbar .cart-count{background:rgba(255,255,255,0.25);padding:4px 10px;border-radius:var(--r-full);font-size:12px;font-weight:800}
 .shop-header{background:linear-gradient(135deg,#10b981 0%,#059669 60%,#047857 100%);color:#fff;padding:24px 20px 32px;border-radius:0 0 var(--r-2xl) var(--r-2xl);position:sticky;top:0;z-index:20}
@@ -1391,7 +1391,7 @@ function shopProductCards(){
     const qty = shopCart[p.id]?.q || 0;
     const unitList = Object.keys(p.units || {Piece:1});
     const currentUnit = shopCart[p.id]?.unit || unitList[0] || 'Piece';
-    return `<div class="prod" data-id="${p.id}">
+    return `<div class="prod">
       <div class="prod-img-wrap">
         <div class="prod-badges">
           ${outOfStock ? '<span class="prod-badge out">OUT OF STOCK</span>' : ''}
@@ -1408,11 +1408,11 @@ function shopProductCards(){
         </div>
         ${unitList.length > 1 ? `
           <div style="margin-bottom:6px">
-            <select data-unit-for="${p.id}" onchange="changeCartUnit('${p.id}', this.value)" style="width:100%;padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-size:12px;font-weight:700;outline:0">
+            <select onchange="changeCartUnit('${p.id}', this.value)" style="width:100%;padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-size:12px;font-weight:700;outline:0">
               ${unitList.map(u => `<option value="${u}" ${currentUnit === u ? 'selected' : ''}>${u} (${p.units[u]} pcs)</option>`).join('')}
             </select>
           </div>
-        ` : ''}`
+        ` : ''}
         <div class="qty-control">
           ${outOfStock 
             ? '<button class="qty-add" disabled style="opacity:0.5;background:var(--muted)">Out of stock</button>'
@@ -1435,47 +1435,21 @@ window.shopPlus = (id) => {
   if(!shopCart[id].unit) shopCart[id].unit = defaultUnit;
   shopCart[id].q++;
   localStorage.setItem('shop_cart', JSON.stringify(shopCart));
-  updateCardQty(id);
-  shopCartBar();
+  renderShop();
 };
-
 window.shopMinus = (id) => {
   if(!shopCart[id]) return;
   shopCart[id].q--;
   if(shopCart[id].q <= 0) delete shopCart[id];
   localStorage.setItem('shop_cart', JSON.stringify(shopCart));
-  updateCardQty(id);
-  shopCartBar();
+  renderShop();
 };
-
 window.changeCartUnit = (id, unit) => {
   shopCart[id] = shopCart[id] || {q:0};
   shopCart[id].unit = unit;
   localStorage.setItem('shop_cart', JSON.stringify(shopCart));
-  updateCardQty(id);
-  shopCartBar();
+  renderShop();
 };
-
-function updateCardQty(id){
-  const p = DB.products.find(x => String(x.id) === String(id));
-  if(!p) return;
-  const card = document.querySelector('.prod[data-id="' + id + '"]');
-  if(!card) return;
-  const qty = shopCart[id]?.q || 0;
-  const outOfStock = (p.stock||0) <= 0;
-  const qc = card.querySelector('.qty-control');
-  if(qc){
-    if(outOfStock){
-      qc.innerHTML = '<button class="qty-add" disabled style="opacity:0.5;background:var(--muted)">Out of stock</button>';
-    } else if(qty > 0){
-      qc.innerHTML = '<button class="qty-btn" onclick="shopMinus(\'' + id + '\')">−</button><div class="qty-count">' + qty + '</div><button class="qty-btn" onclick="shopPlus(\'' + id + '\')">+</button>';
-    } else {
-      qc.innerHTML = '<button class="qty-add" onclick="shopPlus(\'' + id + '\')">ADD +</button>';
-    }
-  }
-  const us = card.querySelector('select[data-unit-for]');
-  if(us && shopCart[id]?.unit) us.value = shopCart[id].unit;
-}
 window.setShopTab = (tab) => {
   shopTab = tab;
   shopSubPage = null;
@@ -1507,24 +1481,16 @@ function shopCartItems(){
   }).filter(Boolean);
 }
 function shopCartBar(){
-  const existing = document.querySelector('.cartbar');
+  document.querySelector('.cartbar')?.remove();
+  if(shopTab !== 'shop') return;
   const items = shopCartItems();
+  if(!items.length) return;
   const total = items.reduce((s,x)=>s+x.total,0);
   const count = items.reduce((s,x)=>s+x.q,0);
-
-  if(!items.length){
-    if(existing){ existing.remove(); }
-    return;
-  }
-  if(existing){
-    existing.querySelector('.cart-count').textContent = count;
-    existing.querySelector('.cart-total-amount').textContent = money(total);
-    return;
-  }
   const bar = document.createElement('div');
   bar.className = 'cartbar';
   bar.onclick = () => setShopTab('cart');
-  bar.innerHTML = '<div class="cart-info"><span style="font-size:20px">🛒</span><span class="cart-count">' + count + '</span><span>View Cart</span></div><div style="display:flex;align-items:center;gap:6px"><span class="cart-total-amount">' + money(total) + '</span><span style="font-size:18px">→</span></div>';
+  bar.innerHTML = `<div class="cart-info"><span style="font-size:20px">🛒</span><span class="cart-count">${count}</span><span>View Cart</span></div><div style="display:flex;align-items:center;gap:6px"><span>${money(total)}</span><span style="font-size:18px">→</span></div>`;
   document.body.appendChild(bar);
 }
 
