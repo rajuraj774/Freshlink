@@ -1537,17 +1537,6 @@ function shopCartBar(){
   });
 }
   });
-  // Update top cart button badge
-  const topCartBtn = document.querySelector('.topbar-actions .btn-gray');
-  if(topCartBtn){
-    const badge = topCartBtn.querySelector('span');
-    if(badge){
-      badge.textContent = cartCount || '';
-      badge.style.display = cartCount > 0 ? 'inline-block' : 'none';
-    }
-  }
-}
-
 function renderShopAuth(){
   const isLogin = authTab === 'login';
   const isForgot = authTab === 'forgot';
