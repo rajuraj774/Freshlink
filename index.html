@@ -1060,164 +1060,200 @@ function renderShop(){
     </div></div>`;
     return;
   }
-  if(shopTab === 'cart'){ renderShopCartPage(); return; }
-  if(shopTab === 'me'){
-    if(shopSubPage === 'orders'){ renderShopOrderHistory(); return; }
-    renderShopMePage(); return;
+
+  const cartCount = Object.values(shopCart).reduce((s,x)=>s+(x.q||0),0);
+  const myOrders = DB.orders.filter(o => o.mobile === shopAccount.mobile);
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+  // Determine content based on current tab
+  let content = '';
+  if(shopTab === 'cart'){ 
+    app().innerHTML = renderShopShell(content, cartCount, myOrders, isDark);
+    setTimeout(() => { document.getElementById('shopContent').innerHTML = renderShopCartContent(); }, 0);
+    return;
   }
-  app().innerHTML = `
-    <div class="shop-header"><div class="shop-header-inner">
-      <div class="shop-header-top">
-        <div>
-          <div class="shop-brand"><span class="icon">🌿</span> ${DB.settings.businessName}</div>
-          <div style="margin-top:14px">
-            <div class="shop-greeting">${greeting()}, ${shopAccount.name.split(' ')[0]}! 👋</div>
-            <div class="shop-sub">${DB.settings.tagline || 'Order FMCG. Delivered to Your Shop.'}</div>
-          </div>
-        </div>
-        <button onclick="shopLogout()" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.2);color:#fff;padding:9px 14px;border-radius:12px;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,0.15)">
-          <span style="font-size:15px">🚪</span><span>Logout</span>
-        </button>
-      </div>
-      <div class="searchbar"><span class="search-icon">🔍</span><input id="shq" placeholder="Search products..." oninput="shopSearch()"></div>
-    </div></div>
-    <main style="max-width:900px;margin:0 auto;padding:16px;padding-bottom:140px">
-      <div class="chips">${['All',...DB.categories].map(c=>`<button class="chip ${c===shopCat?'active':''}" onclick="setShopCat('${c}')">${c==='All'?'🛍️':(CATEGORY_EMOJI[c]||'📦')} ${c}</button>`).join('')}</div>
-      ${renderBuyAgain()}
-      <div style="display:flex;align-items:center;justify-content:space-between;margin:8px 4px 14px">
-        <h3 style="font-size:16px;font-weight:800">📦 All Products</h3>
-        <span class="muted" style="font-size:12.5px">${DB.products.length} items</span>
-      </div>
-      <div class="prod-grid" id="shgrid">${shopProductCards()}</div>
-    </main>
-    ${renderBottomNav()}`;
-  shopCartBar();
+  if(shopTab === 'me'){
+    if(shopSubPage === 'orders'){
+      app().innerHTML = renderShopShell(content, cartCount, myOrders, isDark);
+      setTimeout(() => { document.getElementById('shopContent').innerHTML = renderShopOrdersContent(); }, 0);
+      return;
+    } else {
+      app().innerHTML = renderShopShell(content, cartCount, myOrders, isDark);
+      setTimeout(() => { document.getElementById('shopContent').innerHTML = renderShopMeContent(); }, 0);
+      return;
+    }
+  }
+  // Default: shop tab
+  app().innerHTML = renderShopShell('SHOP_HOME', cartCount, myOrders, isDark);
+  setTimeout(() => {
+    document.getElementById('shopContent').innerHTML = renderShopHomeContent();
+    shopCartBar();
+  }, 0);
 }
 
-function renderShopMePage(){
+function renderShopShell(tab, cartCount, myOrders, isDark){
+  return `
+    <div class="overlay" onclick="closeSidebar()"></div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="icon">🌿</div>
+        <div>
+          <div class="name">${shopAccount.name}</div>
+          <div class="sub">Shop Account</div>
+        </div>
+      </div>
+      <nav class="menu">
+        <a class="${shopTab==='shop'?'active':''}" onclick="setShopTab('shop')"><span class="ic">🏠</span>Shop</a>
+        <a class="${shopTab==='cart'?'active':''}" onclick="setShopTab('cart')"><span class="ic">🛒</span>My Cart ${cartCount?`<span class="badge-n">${cartCount}</span>`:''}</a>
+        <a class="${shopTab==='me'&&!shopSubPage?'active':''}" onclick="setShopTab('me')"><span class="ic">👤</span>My Account</a>
+        <div class="menu-group">📦 Orders</div>
+        <a class="${shopSubPage==='orders'?'active':''}" onclick="openShopSub('orders')"><span class="ic">📋</span>Order History ${myOrders.length?`<span class="badge-n" style="background:var(--primary)">${myOrders.length}</span>`:''}</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="theme-toggle" onclick="toggleTheme()">
+          <span style="font-size:18px">${isDark?'☀️':'🌙'}</span>
+          <span>${isDark?'Light mode':'Dark mode'}</span>
+        </div>
+        <a class="menu" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r);color:var(--danger);font-weight:600;font-size:13.5px;cursor:pointer" onclick="shopLogout()"><span class="ic">🚪</span>Logout</a>
+      </div>
+    </aside>
+    <div class="main" style="padding-bottom:20px">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button class="hamburger" onclick="openSidebar()">☰</button>
+          <div>
+            <h1 id="shopTitle">${shopTab==='cart'?'My Cart':(shopTab==='me'?(shopSubPage==='orders'?'Order History':'My Account'):'Order Products')}</h1>
+            <div class="sub">${greeting()}, ${shopAccount.name.split(' ')[0]}! 👋</div>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-gray btn-sm" onclick="setShopTab('cart')" style="position:relative">
+            🛒 Cart ${cartCount?`<span style="background:var(--danger);color:#fff;font-size:10px;padding:2px 6px;border-radius:999px;margin-left:4px;font-weight:800">${cartCount}</span>`:''}
+          </button>
+        </div>
+      </div>
+      <div id="shopContent"></div>
+    </div>`;
+}
+
+function renderShopHomeContent(){
+  return `
+    <div class="searchbar" style="margin-bottom:16px">
+      <span class="search-icon">🔍</span>
+      <input id="shq" placeholder="Search products..." oninput="shopSearch()">
+    </div>
+    <div class="chips">
+      ${['All',...DB.categories].map(c=>`<button class="chip ${c===shopCat?'active':''}" onclick="setShopCat('${c}')">${c==='All'?'🛍️':(CATEGORY_EMOJI[c]||'📦')} ${c}</button>`).join('')}
+    </div>
+    ${renderBuyAgain()}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin:8px 4px 14px">
+      <h3 style="font-size:16px;font-weight:800">📦 All Products</h3>
+      <span class="muted" style="font-size:12.5px">${DB.products.length} items</span>
+    </div>
+    <div class="prod-grid" id="shgrid">${shopProductCards()}</div>`;
+}
+
+function renderShopCartContent(){
+  const items = shopCartItems();
+  const total = items.reduce((s,x)=>s+x.total,0);
+  return `
+    ${items.length ? `
+      <div class="card" style="margin-bottom:16px">
+        ${items.map(x=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border-soft)">
+          <div style="flex:1"><div style="font-weight:700;font-size:14px">${x.p.name}</div><div class="muted" style="font-size:12px">${x.q} × ${money(x.price)}</div></div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="qty-control" style="width:120px"><button class="qty-btn" onclick="shopMinus('${x.p.id}')">−</button><div class="qty-count">${x.q}</div><button class="qty-btn" onclick="shopPlus('${x.p.id}')">+</button></div>
+            <div style="font-weight:800;min-width:60px;text-align:right">${money(x.total)}</div>
+          </div>
+        </div>`).join('')}
+        <div style="display:flex;justify-content:space-between;font-size:20px;font-weight:900;padding-top:16px;margin-top:6px;border-top:2px solid var(--border)"><span>Total</span><span style="color:var(--primary)">${money(total)}</span></div>
+      </div>
+      <button class="btn btn-primary btn-block btn-lg" onclick="shopPlaceOrder()">✅ Place Order</button>
+      <button class="btn btn-gray btn-block" style="margin-top:12px" onclick="setShopTab('shop')">← Continue Shopping</button>
+    ` : `<div class="card"><div class="empty"><span class="ico">🛒</span><h3>Cart is empty</h3><button class="btn btn-primary" style="margin-top:16px" onclick="setShopTab('shop')">Shop Now →</button></div></div>`}`;
+}
+
+function renderShopMeContent(){
   const shop = DB.shops.find(s=>s.mobile===shopAccount.mobile);
   const myOrders = DB.orders.filter(o => o.mobile === shopAccount.mobile);
   const totalSpent = myOrders.reduce((s,o)=>s+o.total,0);
   const outstanding = shop?.outstanding || 0;
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   const cartCount = Object.values(shopCart).reduce((s,x)=>s+(x.q||0),0);
-  app().innerHTML = `
-    <div class="shop-header"><div class="shop-header-inner">
-      <div class="shop-header-top">
-        <div><div class="shop-brand"><span class="icon">👤</span> My Account</div><div class="shop-sub" style="margin-top:6px">Profile & orders</div></div>
-        <button onclick="setShopTab('shop')" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.2);color:#fff;padding:9px 14px;border-radius:12px;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,0.15)">← Back</button>
+  return `
+    <div class="card" style="text-align:center;padding:28px 20px;margin-bottom:16px">
+      <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:26px;margin:0 auto 14px">${initials(shopAccount.name)}</div>
+      <h2 style="font-size:19px;font-weight:800">${shopAccount.name}</h2>
+      <p class="muted" style="margin-top:6px;font-size:13.5px">📱 ${shopAccount.mobile}</p>
+      ${shop?.owner ? `<p class="muted" style="margin-top:3px;font-size:12.5px">👤 ${shop.owner}</p>` : ''}
+      ${shop?.address ? `<p class="muted" style="margin-top:3px;font-size:12.5px">📍 ${shop.address}</p>` : ''}
+    </div>
+    <div class="stats" style="grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px">
+      <div class="stat green"><div class="icon-bg">📦</div><div class="lbl">Orders</div><div class="num">${myOrders.length}</div></div>
+      <div class="stat blue"><div class="icon-bg">💰</div><div class="lbl">Spent</div><div class="num">${money(totalSpent)}</div></div>
+    </div>
+    ${outstanding > 0 ? `<div class="card" style="background:linear-gradient(135deg,#fee2e2,#fecaca);border:1px solid #ef4444;padding:16px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:14px"><div style="font-size:36px">⚠️</div>
+        <div><div style="font-weight:800;color:#991b1b;font-size:13px">Outstanding</div><div style="font-size:24px;font-weight:900;color:#991b1b;margin-top:2px">${money(outstanding)}</div></div>
       </div>
-    </div></div>
-    <main style="max-width:600px;margin:0 auto;padding:16px;padding-bottom:140px">
-      <div class="card" style="text-align:center;padding:28px 20px;margin-bottom:16px">
-        <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:26px;margin:0 auto 14px">${initials(shopAccount.name)}</div>
-        <h2 style="font-size:19px;font-weight:800">${shopAccount.name}</h2>
-        <p class="muted" style="margin-top:6px;font-size:13.5px">📱 ${shopAccount.mobile}</p>
-        ${shop?.owner ? `<p class="muted" style="margin-top:3px;font-size:12.5px">👤 ${shop.owner}</p>` : ''}
-        ${shop?.address ? `<p class="muted" style="margin-top:3px;font-size:12.5px">📍 ${shop.address}</p>` : ''}
+    </div>` : ''}
+    <div class="card" style="padding:0;overflow:hidden">
+      <div onclick="setShopTab('cart')" class="row-link">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:40px;height:40px;border-radius:12px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:18px">🛒</div>
+          <div><div style="font-weight:700;font-size:14px">My Cart</div><div class="muted" style="font-size:11.5px">${cartCount} item(s)</div></div>
+        </div>
+        <span style="color:var(--muted);font-size:18px">→</span>
       </div>
-      <div class="stats" style="grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px">
-        <div class="stat green"><div class="icon-bg">📦</div><div class="lbl">Orders</div><div class="num">${myOrders.length}</div></div>
-        <div class="stat blue"><div class="icon-bg">💰</div><div class="lbl">Spent</div><div class="num">${money(totalSpent)}</div></div>
+      <div onclick="openShopSub('orders')" class="row-link">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:40px;height:40px;border-radius:12px;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:18px">📦</div>
+          <div><div style="font-weight:700;font-size:14px">My Orders</div><div class="muted" style="font-size:11.5px">View history</div></div>
+        </div>
+        <span style="color:var(--muted);font-size:18px">→</span>
       </div>
-      ${outstanding > 0 ? `<div class="card" style="background:linear-gradient(135deg,#fee2e2,#fecaca);border:1px solid #ef4444;padding:16px;margin-bottom:16px">
-        <div style="display:flex;align-items:center;gap:14px"><div style="font-size:36px">⚠️</div>
-          <div><div style="font-weight:800;color:#991b1b;font-size:13px">Outstanding</div><div style="font-size:24px;font-weight:900;color:#991b1b;margin-top:2px">${money(outstanding)}</div></div>
+      <div onclick="toggleTheme()" class="row-link">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:40px;height:40px;border-radius:12px;background:${isDark?'#1e3a8a':'#fef3c7'};display:flex;align-items:center;justify-content:center;font-size:18px">${isDark?'☀️':'🌙'}</div>
+          <div><div style="font-weight:700;font-size:14px">${isDark?'Light':'Dark'} Mode</div><div class="muted" style="font-size:11.5px">Change theme</div></div>
         </div>
-      </div>` : ''}
-      <div class="card" style="padding:0;overflow:hidden">
-        <div onclick="openShopSub('cart')" class="row-link">
-          <div style="display:flex;align-items:center;gap:14px">
-            <div style="width:40px;height:40px;border-radius:12px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:18px">🛒</div>
-            <div><div style="font-weight:700;font-size:14px">My Cart</div><div class="muted" style="font-size:11.5px">${cartCount} item(s)</div></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px">${cartCount?`<span class="tag tag-approved">${cartCount}</span>`:''}<span style="color:var(--muted);font-size:18px">→</span></div>
-        </div>
-        <div onclick="openShopSub('orders')" class="row-link">
-          <div style="display:flex;align-items:center;gap:14px">
-            <div style="width:40px;height:40px;border-radius:12px;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:18px">📦</div>
-            <div><div style="font-weight:700;font-size:14px">My Orders</div><div class="muted" style="font-size:11.5px">View history</div></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px">${myOrders.length?`<span class="tag tag-approved">${myOrders.length}</span>`:''}<span style="color:var(--muted);font-size:18px">→</span></div>
-        </div>
-        <div onclick="toggleTheme()" class="row-link">
-          <div style="display:flex;align-items:center;gap:14px">
-            <div style="width:40px;height:40px;border-radius:12px;background:${isDark?'#1e3a8a':'#fef3c7'};display:flex;align-items:center;justify-content:center;font-size:18px">${isDark?'☀️':'🌙'}</div>
-            <div><div style="font-weight:700;font-size:14px">${isDark?'Light':'Dark'} Mode</div><div class="muted" style="font-size:11.5px">Change theme</div></div>
-          </div>
-          <span style="color:var(--muted);font-size:18px">→</span>
-        </div>
-        <div onclick="shopLogout()" class="row-link">
-          <div style="display:flex;align-items:center;gap:14px">
-            <div style="width:40px;height:40px;border-radius:12px;background:#fee2e2;display:flex;align-items:center;justify-content:center;font-size:18px">🚪</div>
-            <div><div style="font-weight:700;font-size:14px;color:var(--danger)">Logout</div><div class="muted" style="font-size:11.5px">Sign out</div></div>
-          </div>
-          <span style="color:var(--muted);font-size:18px">→</span>
-        </div>
+        <span style="color:var(--muted);font-size:18px">→</span>
       </div>
-    </main>
-    ${renderBottomNav()}`;
+      <div onclick="shopLogout()" class="row-link">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:40px;height:40px;border-radius:12px;background:#fee2e2;display:flex;align-items:center;justify-content:center;font-size:18px">🚪</div>
+          <div><div style="font-weight:700;font-size:14px;color:var(--danger)">Logout</div><div class="muted" style="font-size:11.5px">Sign out</div></div>
+        </div>
+        <span style="color:var(--muted);font-size:18px">→</span>
+      </div>
+    </div>`;
 }
 
-function renderShopOrderHistory(){
+function renderShopOrdersContent(){
   const myOrders = DB.orders.filter(o => o.mobile === shopAccount.mobile);
-  app().innerHTML = `
-    <div class="shop-header"><div class="shop-header-inner">
-      <div class="shop-header-top">
-        <div><div class="shop-brand"><span class="icon">📦</span> Order History</div><div class="shop-sub" style="margin-top:6px">${myOrders.length} total order${myOrders.length!==1?'s':''}</div></div>
-        <button onclick="closeShopSub()" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.2);color:#fff;padding:9px 14px;border-radius:12px;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,0.15)">← Back</button>
-      </div>
-    </div></div>
-    <main style="max-width:600px;margin:0 auto;padding:16px;padding-bottom:140px">
-      ${myOrders.length ? myOrders.map(o=>`
-        <div class="card" style="padding:16px;margin-bottom:12px">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px">
-            <div>
-              <div style="font-weight:800;font-size:14.5px">#${o.id}</div>
-              <div class="muted" style="font-size:11.5px;margin-top:3px">${new Date(o.date).toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
-              <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">${statusTag(o.status)} ${payTag(o.paymentStatus)}</div>
-            </div>
-            <div style="text-align:right"><div style="font-size:18px;font-weight:900">${money(o.total)}</div><div class="muted" style="font-size:11px">${(o.items||[]).length} item(s)</div></div>
+  return `
+    ${myOrders.length ? myOrders.map(o=>`
+      <div class="card" style="padding:16px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px">
+          <div>
+            <div style="font-weight:800;font-size:14.5px">#${o.id}</div>
+            <div class="muted" style="font-size:11.5px;margin-top:3px">${new Date(o.date).toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
+            <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">${statusTag(o.status)} ${payTag(o.paymentStatus)}</div>
           </div>
-          <div style="background:var(--bg-soft);border-radius:12px;padding:12px 14px">
-            ${(o.items||[]).map(it=>`<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;border-bottom:1px dashed var(--border)">
-              <span style="flex:1">${it.name}</span><span class="muted" style="margin:0 10px">× ${it.qty}</span><b>${money(it.total)}</b>
-            </div>`).join('')}
-          </div>
-          <div style="display:flex;gap:8px;margin-top:12px">
-            <button class="btn btn-primary btn-sm" style="flex:1" onclick="reorderItems('${o.id}')">🔄 Reorder</button>
-            <button class="btn btn-gray btn-sm" onclick="printOrder('${o.id}')">🖨️ Print</button>
-          </div>
+          <div style="text-align:right"><div style="font-size:18px;font-weight:900">${money(o.total)}</div><div class="muted" style="font-size:11px">${(o.items||[]).length} item(s)</div></div>
         </div>
-      `).join('') : `<div class="card"><div class="empty"><span class="ico">📦</span><h3>No orders yet</h3><button class="btn btn-primary" style="margin-top:16px" onclick="setShopTab('shop')">Shop Now →</button></div></div>`}
-    </main>
-    ${renderBottomNav()}`;
+        <div style="background:var(--bg-soft);border-radius:12px;padding:12px 14px">
+          ${(o.items||[]).map(it=>`<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;border-bottom:1px dashed var(--border)">
+            <span style="flex:1">${it.name}</span><span class="muted" style="margin:0 10px">× ${it.qty}</span><b>${money(it.total)}</b>
+          </div>`).join('')}
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn btn-primary btn-sm" style="flex:1" onclick="reorderItems('${o.id}')">🔄 Reorder</button>
+          <button class="btn btn-gray btn-sm" onclick="printOrder('${o.id}')">🖨️ Print</button>
+        </div>
+      </div>
+    `).join('') : `<div class="card"><div class="empty"><span class="ico">📦</span><h3>No orders yet</h3><button class="btn btn-primary" style="margin-top:16px" onclick="setShopTab('shop')">Shop Now →</button></div></div>`}`;
 }
-window.reorderItems = function(orderId){
-  const order = DB.orders.find(o => o.id === orderId);
-  if(!order || !order.items?.length){ toast('Not found'); return; }
-  let added = 0;
-  order.items.forEach(it => { if(it.pid){ shopCart[it.pid] = shopCart[it.pid] || {q:0}; shopCart[it.pid].q += it.qty; added++; } });
-  localStorage.setItem('shop_cart', JSON.stringify(shopCart));
-  toast(`✅ ${added} item(s) added`);
-  shopTab = 'cart'; shopSubPage = null;
-  setTimeout(()=>renderShop(), 300);
-};
-window.printOrder = function(orderId){
-  const o = DB.orders.find(x => x.id === orderId);
-  if(!o){ toast('Not found'); return; }
-  const w = window.open('', '_blank');
-  w.document.write(`<html><head><title>Order #${o.id}</title><style>body{font-family:Arial,sans-serif;padding:24px;max-width:600px;margin:auto;color:#111}h1{margin:0 0 4px;font-size:20px}.shop-info{color:#666;font-size:13px;margin-bottom:20px}table{width:100%;border-collapse:collapse;margin:20px 0}th{text-align:left;padding:10px 8px;border-bottom:2px solid #111;font-size:12px}td{padding:10px 8px;border-bottom:1px solid #eee;font-size:13px}.total{display:flex;justify-content:space-between;font-size:18px;font-weight:800;padding-top:14px;border-top:2px solid #111;margin-top:8px}.footer{margin-top:30px;font-size:11px;color:#888;text-align:center}</style></head><body>
-    <h1>${DB.settings.businessName}</h1>
-    <div class="shop-info">${DB.settings.address || ''}<br>Order #${o.id} • ${new Date(o.date).toLocaleString('en-IN')}</div>
-    <div><b>Shop:</b> ${o.shopName}</div><div><b>Mobile:</b> ${o.mobile}</div>
-    <table><thead><tr><th>Item</th><th>Qty</th><th>Price</th><th style="text-align:right">Total</th></tr></thead>
-    <tbody>${(o.items||[]).map(it=>`<tr><td>${it.name}</td><td>${it.qty}</td><td>₹${it.price}</td><td style="text-align:right">₹${it.total}</td></tr>`).join('')}</tbody></table>
-    <div class="total"><span>Total</span><span>₹${o.total}</span></div>
-    <div class="footer">Thank you for your business!</div></body></html>`);
-  w.document.close();
-  setTimeout(()=>w.print(), 300);
-};
 
 function renderBuyAgain(){
   if(!DB.orders.length) return '';
@@ -1335,15 +1371,6 @@ function renderShopCartPage(){
     ${renderBottomNav()}`;
 }
 
-function renderBottomNav(){
-  const cartCount = Object.values(shopCart).reduce((s,x)=>s+(x.q||0),0);
-  return `<nav class="bottom-nav"><div class="bottom-nav-inner">
-    <div class="bottom-nav-item ${shopTab==='shop'?'active':''}" onclick="setShopTab('shop')"><span class="ic">🏠</span>Shop</div>
-    <div class="bottom-nav-item ${shopTab==='cart'?'active':''}" onclick="setShopTab('cart')"><span class="ic">🛒</span>Cart${cartCount?`<span class="badge-n">${cartCount}</span>`:''}</div>
-    <div class="bottom-nav-item ${shopTab==='me'?'active':''}" onclick="setShopTab('me')"><span class="ic">👤</span>Me</div>
-  </div></nav>`;
-}
-
 function shopCartItems(){
   const shop = DB.shops.find(s=>s.mobile===shopAccount.mobile);
   return Object.entries(shopCart).map(([id,e])=>{
@@ -1352,19 +1379,6 @@ function shopCartItems(){
     const price = shop?.customPrices?.[p.id] ?? p.price;
     return {p, q: e.q, price, total: e.q*price};
   }).filter(Boolean);
-}
-function shopCartBar(){
-  document.querySelector('.cartbar')?.remove();
-  if(shopTab !== 'shop') return;
-  const items = shopCartItems();
-  if(!items.length) return;
-  const total = items.reduce((s,x)=>s+x.total,0);
-  const count = items.reduce((s,x)=>s+x.q,0);
-  const bar = document.createElement('div');
-  bar.className = 'cartbar';
-  bar.onclick = () => setShopTab('cart');
-  bar.innerHTML = `<div class="cart-info"><span style="font-size:20px">🛒</span><span class="cart-count">${count}</span><span>View Cart</span></div><div style="display:flex;align-items:center;gap:6px"><span>${money(total)}</span><span style="font-size:18px">→</span></div>`;
-  document.body.appendChild(bar);
 }
 
 function renderShopAuth(){
