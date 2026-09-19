@@ -1345,16 +1345,16 @@ function renderBuyAgain(){
         const price = shop?.customPrices?.[p.id] ?? p.price;
         const qty = shopCart[p.id]?.q || 0;
         const firstUnit = Object.keys(p.units || {Piece:1})[0];
-        return `<div class="carousel-item">
+        return `<div class="carousel-item" data-id="${p.id}">
           ${p.img ? `<img src="${p.img}" onerror="this.outerHTML='<div class=noimg>📦</div>'">` : '<div class="noimg">📦</div>'}
           <h5>${p.name}</h5>
           <div class="cp">${money(price)} <span style="font-size:10px;color:var(--muted)">/${firstUnit}</span></div>
           <div style="display:flex;align-items:center;gap:4px;justify-content:center">
             ${qty > 0
-              ? `<button class="qty-btn" style="height:32px;font-size:16px;max-width:38px" onclick="shopMinus('${p.id}')">−</button>
-                 <div class="qty-count" style="min-width:34px;height:32px;font-size:13px">${qty}</div>
-                 <button class="qty-btn" style="height:32px;font-size:16px;max-width:38px" onclick="shopPlus('${p.id}')">+</button>`
-              : `<button class="qty-add" style="height:32px;font-size:12px" onclick="shopPlus('${p.id}')">ADD +</button>`}
+  ? `<button class="qty-btn" style="height:32px;font-size:16px;max-width:38px" onclick="event.stopPropagation();shopMinus('${p.id}')">−</button>
+     <div class="qty-count" style="min-width:34px;height:32px;font-size:13px">${qty}</div>
+     <button class="qty-btn" style="height:32px;font-size:16px;max-width:38px" onclick="event.stopPropagation();shopPlus('${p.id}')">+</button>`
+  : `<button class="qty-add" style="height:32px;font-size:12px" onclick="event.stopPropagation();shopPlus('${p.id}')">ADD +</button>`}
           </div>
         </div>`;
       }).join('')}
