@@ -1391,7 +1391,7 @@ function shopProductCards(){
     const qty = shopCart[p.id]?.q || 0;
     const unitList = Object.keys(p.units || {Piece:1});
     const currentUnit = shopCart[p.id]?.unit || unitList[0] || 'Piece';
-    return `<div class="prod" data-id="${p.id}">`
+    return `<div class="prod" data-id="${p.id}">
       <div class="prod-img-wrap">
         <div class="prod-badges">
           ${outOfStock ? '<span class="prod-badge out">OUT OF STOCK</span>' : ''}
