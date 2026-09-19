@@ -632,22 +632,40 @@ function viewProducts(){
     </div>`;
 }
 function viewProductForm(id){
-  const p = id ? DB.products.find(x=>x.id===id) : {id:0,name:'',price:0,pack:'',cat:DB.categories[0],img:'',stock:0,sku:''};
+  const p = id ? DB.products.find(x=>x.id===id) : {
+    id:0,name:'',price:0,pack:'',cat:DB.categories[0],img:'',stock:0,sku:'',
+    units:{Piece:1,Box:12,Case:48,Carton:96}
+  };
+  const units = p.units || {Piece:1,Box:12,Case:48,Carton:96};
   return `
-    <div class="card" style="max-width:640px">
+    <div class="card" style="max-width:720px">
       <h3 style="margin-bottom:16px">${id?'✏️ Edit':'➕ Add'} Product</h3>
       <div class="form-row">
         <div class="field"><label>Name *</label><input id="f_name" value="${p.name}"></div>
         <div class="field"><label>SKU</label><input id="f_sku" value="${p.sku||''}"></div>
       </div>
       <div class="form-row">
-        <div class="field"><label>Price (₹) *</label><input id="f_price" type="number" value="${p.price}"></div>
-        <div class="field"><label>Pack Size</label><input id="f_pack" value="${p.pack}"></div>
+        <div class="field"><label>Price per Piece (₹) *</label><input id="f_price" type="number" value="${p.price}"></div>
+        <div class="field"><label>Pack Size (e.g. 800 g)</label><input id="f_pack" value="${p.pack}"></div>
       </div>
       <div class="form-row">
         <div class="field"><label>Category *</label><select id="f_cat">${DB.categories.map(c=>`<option ${c===p.cat?'selected':''}>${c}</option>`).join('')}</select></div>
-        <div class="field"><label>Stock</label><input id="f_stock" type="number" value="${p.stock||0}"></div>
+        <div class="field"><label>Stock (total pieces)</label><input id="f_stock" type="number" value="${p.stock||0}"></div>
       </div>
+
+      <div style="background:var(--bg-soft);border-radius:12px;padding:14px;margin-bottom:16px">
+        <div style="font-weight:800;font-size:13px;margin-bottom:10px">📦 Pack Units</div>
+        <p class="muted" style="font-size:11.5px;margin-bottom:12px">Enter how many pieces in each unit. Leave blank or 0 if not sold in that unit.</p>
+        <div class="form-row">
+          <div class="field"><label>Piece</label><input id="u_piece" type="number" value="${units.Piece||1}" min="1"></div>
+          <div class="field"><label>Box (pieces per box)</label><input id="u_box" type="number" value="${units.Box||''}" placeholder="e.g. 12"></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Case (pieces per case)</label><input id="u_case" type="number" value="${units.Case||''}" placeholder="e.g. 48"></div>
+          <div class="field"><label>Carton (pieces per carton)</label><input id="u_carton" type="number" value="${units.Carton||''}" placeholder="e.g. 96"></div>
+        </div>
+      </div>
+
       <div class="field"><label>Image URL</label><input id="f_img" value="${p.img||''}" placeholder="https://..."></div>
       <div style="display:flex;gap:10px;margin-top:8px">
         <button class="btn btn-primary" onclick="saveProduct('${p.id||''}')">💾 Save</button>
@@ -661,7 +679,21 @@ window.editProduct = (id) => {
   setTimeout(() => { $('content').innerHTML = viewProductForm(id); }, 50);
 };
 window.saveProduct = async function(id){
-  const data = { name: $('f_name').value.trim(), sku: $('f_sku').value.trim(), price: +$('f_price').value, pack: $('f_pack').value.trim(), cat: $('f_cat').value, stock: +$('f_stock').value, img: $('f_img').value.trim() };
+  const units = { Piece: +$('u_piece').value || 1 };
+  const box = +$('u_box').value; if(box > 0) units.Box = box;
+  const cs = +$('u_case').value; if(cs > 0) units.Case = cs;
+  const ct = +$('u_carton').value; if(ct > 0) units.Carton = ct;
+
+  const data = {
+    name: $('f_name').value.trim(),
+    sku: $('f_sku').value.trim(),
+    price: +$('f_price').value,
+    pack: $('f_pack').value.trim(),
+    cat: $('f_cat').value,
+    stock: +$('f_stock').value,
+    img: $('f_img').value.trim(),
+    units: units
+  };
   if(!data.name || !data.price){ toast('⚠️ Name and price required'); return; }
   const existing = id && id !== '0' ? DB.products.find(x=>x.id===id) : null;
   await saveProductDoc(existing ? {...existing, ...data} : data);
@@ -1160,7 +1192,7 @@ function renderShopCartContent(){
     ${items.length ? `
       <div class="card" style="margin-bottom:16px">
         ${items.map(x=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border-soft)">
-          <div style="flex:1"><div style="font-weight:700;font-size:14px">${x.p.name}</div><div class="muted" style="font-size:12px">${x.q} × ${money(x.price)}</div></div>
+          <div style="flex:1"><div style="font-weight:700;font-size:14px">${x.p.name}</div><div class="muted" style="font-size:12px">${x.q} ${x.unit}${x.q>1?'s':''} × ${money(x.price / x.mult)} = ${money(x.price)}</div></div>
           <div style="display:flex;align-items:center;gap:8px">
             <div class="qty-control" style="width:120px"><button class="qty-btn" onclick="shopMinus('${x.p.id}')">−</button><div class="qty-count">${x.q}</div><button class="qty-btn" onclick="shopPlus('${x.p.id}')">+</button></div>
             <div style="font-weight:800;min-width:60px;text-align:right">${money(x.total)}</div>
@@ -1244,7 +1276,7 @@ function renderShopOrdersContent(){
         </div>
         <div style="background:var(--bg-soft);border-radius:12px;padding:12px 14px">
           ${(o.items||[]).map(it=>`<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;border-bottom:1px dashed var(--border)">
-            <span style="flex:1">${it.name}</span><span class="muted" style="margin:0 10px">× ${it.qty}</span><b>${money(it.total)}</b>
+            <span style="flex:1">${it.name} ${it.unit?'('+it.unit+')':''}</span><span class="muted" style="margin:0 10px">× ${it.qty}</span><b>${money(it.total)}</b>
           </div>`).join('')}
         </div>
         <div style="display:flex;gap:8px;margin-top:12px">
@@ -1320,13 +1352,23 @@ function shopProductCards(){
           <span class="prod-price">${money(price)}</span>
           ${hasDiscount ? `<span class="prod-price-old">${money(p.price)}</span>` : ''}
         </div>
-        <div class="qty-control">
-          ${outOfStock 
-            ? '<button class="qty-add" disabled style="opacity:0.5;background:var(--muted)">Out of stock</button>'
-            : (qty>0
-              ? `<button class="qty-btn" onclick="shopMinus('${p.id}')">−</button><div class="qty-count">${qty}</div><button class="qty-btn" onclick="shopPlus('${p.id}')">+</button>`
-              : `<button class="qty-add" onclick="shopPlus('${p.id}')">ADD +</button>`)}
-        </div>
+        ${Object.keys(p.units || {Piece:1}).length > 1 ? `
+  <div style="margin-top:6px">
+    <select onchange="changeCartUnit('${p.id}', this.value)" 
+            style="width:100%;padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-size:12px;font-weight:700;outline:0">
+      ${Object.entries(p.units || {Piece:1}).map(([u, m]) => 
+        `<option value="${u}" ${(shopCart[p.id]?.unit === u || (!shopCart[p.id]?.unit && u === 'Piece')) ? 'selected' : ''}>${u} (${m} pcs)</option>`
+      ).join('')}
+    </select>
+  </div>
+` : ''}
+<div class="qty-control">
+  ${outOfStock 
+    ? '<button class="qty-add" disabled style="opacity:0.5;background:var(--muted)">Out of stock</button>'
+    : (qty>0
+      ? `<button class="qty-btn" onclick="shopMinus('${p.id}')">−</button><div class="qty-count">${qty}</div><button class="qty-btn" onclick="shopPlus('${p.id}')">+</button>`
+      : `<button class="qty-add" onclick="shopPlus('${p.id}')">ADD +</button>`)}
+</div>
       </div>
     </div>`;
   }).join('');
@@ -1334,8 +1376,29 @@ function shopProductCards(){
 
 window.shopSearch = () => { window._shq = $('shq').value; $('shgrid').innerHTML = shopProductCards(); };
 window.setShopCat = (c) => { shopCat = c; renderShop(); };
-window.shopPlus = (id) => { shopCart[id] = shopCart[id]||{q:0}; shopCart[id].q++; localStorage.setItem('shop_cart',JSON.stringify(shopCart)); renderShop(); };
-window.shopMinus = (id) => { if(!shopCart[id]) return; shopCart[id].q--; if(shopCart[id].q<=0) delete shopCart[id]; localStorage.setItem('shop_cart',JSON.stringify(shopCart)); renderShop(); };
+window.shopPlus = (id) => {
+  const p = DB.products.find(x => String(x.id) === String(id));
+  if(!p) return;
+  const defaultUnit = Object.keys(p.units || {Piece:1})[0];
+  shopCart[id] = shopCart[id] || {q:0, unit: defaultUnit};
+  if(!shopCart[id].unit) shopCart[id].unit = defaultUnit;
+  shopCart[id].q++;
+  localStorage.setItem('shop_cart', JSON.stringify(shopCart));
+  renderShop();
+};
+window.shopMinus = (id) => {
+  if(!shopCart[id]) return;
+  shopCart[id].q--;
+  if(shopCart[id].q <= 0) delete shopCart[id];
+  localStorage.setItem('shop_cart', JSON.stringify(shopCart));
+  renderShop();
+};
+window.changeCartUnit = (id, unit) => {
+  shopCart[id] = shopCart[id] || {q:0};
+  shopCart[id].unit = unit;
+  localStorage.setItem('shop_cart', JSON.stringify(shopCart));
+  renderShop();
+};
 window.setShopTab = (tab) => {   shopTab = tab;   shopSubPage = null;   renderShop();   document.querySelector('.sidebar')?.classList.remove('open');   document.querySelector('.overlay')?.classList.remove('show'); };
 window.openShopSub = function(sub){
   if(sub === 'cart'){ shopTab = 'cart'; shopSubPage = null; }
@@ -1381,8 +1444,10 @@ function shopCartItems(){
   return Object.entries(shopCart).map(([id,e])=>{
     const p = DB.products.find(x=>x.id==id);
     if(!p || !e.q) return null;
-    const price = shop?.customPrices?.[p.id] ?? p.price;
-    return {p, q: e.q, price, total: e.q*price};
+    const unit = e.unit || 'Piece';
+    const mult = (p.units && p.units[unit]) ? p.units[unit] : 1;
+    const price = (shop?.customPrices?.[p.id] ?? p.price) * mult;
+    return {p, q: e.q, unit, mult, price, total: e.q * price};
   }).filter(Boolean);
 }
 
@@ -1529,7 +1594,7 @@ window.shopPlaceOrder = async function(){
   const total = items.reduce((s,x)=>s+x.total,0);
   const orderId = "FL" + Date.now().toString().slice(-6);
   const order = { id: orderId, shopName: shopAccount.name, mobile: shopAccount.mobile, date: new Date().toISOString(),
-    items: items.map(x=>({pid:x.p.id, name:x.p.name, qty:x.q, price:x.price, total:x.total})), total, status: 'New', paymentStatus: 'Unpaid' };
+    items: items.map(x=>({pid:x.p.id, name:x.p.name, qty:x.q, unit:x.unit, mult:x.mult, price:x.price, total:x.total})), total, status: 'New', paymentStatus: 'Unpaid' };
   await saveOrderDoc(order);
   let shop = DB.shops.find(s=>s.mobile===shopAccount.mobile);
   if(shop) await saveShopDoc({...shop, outstanding: (shop.outstanding||0) + total});
