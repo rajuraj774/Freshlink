@@ -27,7 +27,7 @@
   --primary-light:#064e3b;--primary-50:#022c22;--danger-light:#7f1d1d;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-anchor:none}
 button{font-family:inherit;cursor:pointer;border:0;background:transparent}
 input,select,textarea{font-family:inherit;font-size:14px}
 img{max-width:100%;display:block}
@@ -1508,19 +1508,15 @@ function shopCartItems(){
 }
 function shopCartBar(){
   const existing = document.querySelector('.cartbar');
-  if(shopTab !== 'shop'){
-    if(existing){ existing.style.animation = 'slideDown 0.25s ease forwards'; setTimeout(()=>existing.remove(), 250); }
-    return;
-  }
   const items = shopCartItems();
-  if(!items.length){
-    if(existing){ existing.style.animation = 'slideDown 0.25s ease forwards'; setTimeout(()=>existing.remove(), 250); }
-    return;
-  }
   const total = items.reduce((s,x)=>s+x.total,0);
   const count = items.reduce((s,x)=>s+x.q,0);
+
+  if(!items.length){
+    if(existing){ existing.remove(); }
+    return;
+  }
   if(existing){
-    // Just update numbers, keep visible
     existing.querySelector('.cart-count').textContent = count;
     existing.querySelector('.cart-total-amount').textContent = money(total);
     return;
@@ -1528,7 +1524,7 @@ function shopCartBar(){
   const bar = document.createElement('div');
   bar.className = 'cartbar';
   bar.onclick = () => setShopTab('cart');
-  bar.innerHTML = `<div class="cart-info"><span style="font-size:20px">🛒</span><span class="cart-count">${count}</span><span>View Cart</span></div><div style="display:flex;align-items:center;gap:6px"><span class="cart-total-amount">${money(total)}</span><span style="font-size:18px">→</span></div>`;
+  bar.innerHTML = '<div class="cart-info"><span style="font-size:20px">🛒</span><span class="cart-count">' + count + '</span><span>View Cart</span></div><div style="display:flex;align-items:center;gap:6px"><span class="cart-total-amount">' + money(total) + '</span><span style="font-size:18px">→</span></div>';
   document.body.appendChild(bar);
 }
 
