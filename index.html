@@ -1490,6 +1490,8 @@ function renderBottomNav(){
   const cartCount = Object.values(shopCart).reduce((s,x)=>s+(x.q||0),0);
   return `<nav class="bottom-nav"><div class="bottom-nav-inner">
     <div class="bottom-nav-item ${shopTab==='shop'?'active':''}" onclick="setShopTab('shop')"><span class="ic">🏠</span>Shop</div>
+      <div class="bottom-nav-item ${shopTab==='cart'?'active':''}" onclick="setShopTab('cart')"><span class="ic">🛒</span>Cart${cartCount?`<span class="badge-n">${cartCount}</span>`:''}</div>
+<div class="bottom-nav-item ${shopTab==='me'?'active':''}" onclick="setShopTab('me')"><span class="ic">👤</span>Me</div>
     <div class="bottom-nav-item ${shopTab==='cart'?'active':''}" onclick="setShopTab('cart')"><span class="ic">🛒</span>Cart${cartCount?`<span class="badge-n">${cartCount}</span>`:''}</div>
     <div class="bottom-nav-item ${shopTab==='me'?'active':''}" onclick="setShopTab('me')"><span class="ic">👤</span>Me</div>
   </div></nav>`;
