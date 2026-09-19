@@ -1107,7 +1107,7 @@ function renderShopShell(tab, cartCount, myOrders, isDark){
         <a class="${shopTab==='cart'?'active':''}" onclick="setShopTab('cart')"><span class="ic">🛒</span>My Cart ${cartCount?`<span class="badge-n">${cartCount}</span>`:''}</a>
         <a class="${shopTab==='me'&&!shopSubPage?'active':''}" onclick="setShopTab('me')"><span class="ic">👤</span>My Account</a>
         <div class="menu-group">📦 Orders</div>
-        <a class="${shopSubPage==='orders'?'active':''}" onclick="openShopSub('orders')"><span class="ic">📋</span>Order History ${myOrders.length?`<span class="badge-n" style="background:var(--primary)">${myOrders.length}</span>`:''}</a>
+        <a class="${(shopTab==='me' && shopSubPage==='orders')?'active':''}" onclick="openShopSub('orders')"><span class="ic">📋</span>Order History ${myOrders.length?`<span class="badge-n" style="background:var(--primary)">${myOrders.length}</span>`:''}</a>
       </nav>
       <div class="sidebar-footer">
         <div class="theme-toggle" onclick="toggleTheme()">
@@ -1336,7 +1336,7 @@ window.shopSearch = () => { window._shq = $('shq').value; $('shgrid').innerHTML 
 window.setShopCat = (c) => { shopCat = c; renderShop(); };
 window.shopPlus = (id) => { shopCart[id] = shopCart[id]||{q:0}; shopCart[id].q++; localStorage.setItem('shop_cart',JSON.stringify(shopCart)); renderShop(); };
 window.shopMinus = (id) => { if(!shopCart[id]) return; shopCart[id].q--; if(shopCart[id].q<=0) delete shopCart[id]; localStorage.setItem('shop_cart',JSON.stringify(shopCart)); renderShop(); };
-window.setShopTab = (tab) => { shopTab = tab; shopSubPage = null; renderShop(); };
+window.setShopTab = (tab) => {   shopTab = tab;   shopSubPage = null;   renderShop();   document.querySelector('.sidebar')?.classList.remove('open');   document.querySelector('.overlay')?.classList.remove('show'); };
 window.openShopSub = function(sub){
   if(sub === 'cart'){ shopTab = 'cart'; shopSubPage = null; }
   else if(sub === 'orders'){ shopTab = 'me'; shopSubPage = 'orders'; }
