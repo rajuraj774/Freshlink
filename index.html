@@ -1570,6 +1570,26 @@ window.shopPlaceOrder = async function(){
       <button onclick="location.reload()" class="btn btn-primary">🔄 Retry</button>
     </div>`;
   }
+  window.reorderItems = function(orderId){
+  const order = DB.orders.find(o => o.id === orderId);
+  if(!order || !order.items?.length){ toast('Order not found'); return; }
+  let added = 0;
+  order.items.forEach(it => {
+    let product = null;
+    if(it.pid) product = DB.products.find(p => String(p.id) === String(it.pid));
+    if(!product && it.name) product = DB.products.find(p => p.name === it.name);
+    if(product){
+      shopCart[product.id] = shopCart[product.id] || {q: 0};
+      shopCart[product.id].q += (it.qty || 1);
+      added++;
+    }
+  });
+  if(added === 0){ toast('⚠️ Products unavailable'); return; }
+  localStorage.setItem('shop_cart', JSON.stringify(shopCart));
+  toast(`✅ ${added} item(s) added`);
+  shopTab = 'cart'; shopSubPage = null;
+  setTimeout(() => renderShop(), 300);
+};
 })();
 </script>
 </body>
