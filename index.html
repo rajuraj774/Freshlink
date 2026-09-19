@@ -1391,7 +1391,7 @@ function shopProductCards(){
     const qty = shopCart[p.id]?.q || 0;
     const unitList = Object.keys(p.units || {Piece:1});
     const currentUnit = shopCart[p.id]?.unit || unitList[0] || 'Piece';
-    return `<div class="prod">
+    return `<div class="prod" data-id="${p.id}">`
       <div class="prod-img-wrap">
         <div class="prod-badges">
           ${outOfStock ? '<span class="prod-badge out">OUT OF STOCK</span>' : ''}
@@ -1408,7 +1408,7 @@ function shopProductCards(){
         </div>
         ${unitList.length > 1 ? `
           <div style="margin-bottom:6px">
-            <select onchange="changeCartUnit('${p.id}', this.value)" style="width:100%;padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-size:12px;font-weight:700;outline:0">
+            <select data-unit-for="${p.id}" onchange="changeCartUnit('${p.id}', this.value)" style="width:100%;padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-size:12px;font-weight:700;outline:0">
               ${unitList.map(u => `<option value="${u}" ${currentUnit === u ? 'selected' : ''}>${u} (${p.units[u]} pcs)</option>`).join('')}
             </select>
           </div>
@@ -1435,21 +1435,47 @@ window.shopPlus = (id) => {
   if(!shopCart[id].unit) shopCart[id].unit = defaultUnit;
   shopCart[id].q++;
   localStorage.setItem('shop_cart', JSON.stringify(shopCart));
-  renderShop();
+  updateCardQty(id);
+  shopCartBar();
 };
+
 window.shopMinus = (id) => {
   if(!shopCart[id]) return;
   shopCart[id].q--;
   if(shopCart[id].q <= 0) delete shopCart[id];
   localStorage.setItem('shop_cart', JSON.stringify(shopCart));
-  renderShop();
+  updateCardQty(id);
+  shopCartBar();
 };
+
 window.changeCartUnit = (id, unit) => {
   shopCart[id] = shopCart[id] || {q:0};
   shopCart[id].unit = unit;
   localStorage.setItem('shop_cart', JSON.stringify(shopCart));
-  renderShop();
+  updateCardQty(id);
+  shopCartBar();
 };
+
+function updateCardQty(id){
+  const p = DB.products.find(x => String(x.id) === String(id));
+  if(!p) return;
+  const card = document.querySelector('.prod[data-id="' + id + '"]');
+  if(!card) return;
+  const qty = shopCart[id]?.q || 0;
+  const outOfStock = (p.stock||0) <= 0;
+  const qc = card.querySelector('.qty-control');
+  if(qc){
+    if(outOfStock){
+      qc.innerHTML = '<button class="qty-add" disabled style="opacity:0.5;background:var(--muted)">Out of stock</button>';
+    } else if(qty > 0){
+      qc.innerHTML = '<button class="qty-btn" onclick="shopMinus(\'' + id + '\')">−</button><div class="qty-count">' + qty + '</div><button class="qty-btn" onclick="shopPlus(\'' + id + '\')">+</button>';
+    } else {
+      qc.innerHTML = '<button class="qty-add" onclick="shopPlus(\'' + id + '\')">ADD +</button>';
+    }
+  }
+  const us = card.querySelector('select[data-unit-for]');
+  if(us && shopCart[id]?.unit) us.value = shopCart[id].unit;
+}
 window.setShopTab = (tab) => {
   shopTab = tab;
   shopSubPage = null;
