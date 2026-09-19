@@ -1097,7 +1097,7 @@ function renderShopShell(cartCount, myOrders, isDark){
       </div>
       <nav class="menu">
         <a class="${shopTab==='shop'?'active':''}" onclick="setShopTab('shop')"><span class="ic">🏠</span>Shop</a>
-        <a class="${shopTab==='cart'?'active':''}" onclick="setShopTab('cart')"><span class="ic">🛒</span>My Cart ${cartCount?`<span class="badge-n">${cartCount}</span>`:''}</a>
+        <a class="${shopTab==='cart'?'active':''}" onclick="setShopTab('cart')" data-cart-link><span class="ic">🛒</span>My Cart ${cartCount?`<span class="badge-n">${cartCount}</span>`:''}</a>
         <a class="${shopTab==='me'&&!shopSubPage?'active':''}" onclick="setShopTab('me')"><span class="ic">👤</span>My Account</a>
         <div class="menu-group">📦 Orders</div>
         <a class="${(shopTab==='me' && shopSubPage==='orders')?'active':''}" onclick="openShopSub('orders')"><span class="ic">📋</span>Order History ${myOrders.length?`<span class="badge-n" style="background:var(--primary)">${myOrders.length}</span>`:''}</a>
@@ -1453,8 +1453,9 @@ function updateCardQty(id){
       qc.innerHTML = '<button class="qty-add" onclick="shopPlus(\'' + id + '\')">ADD +</button>';
     }
   }
-  const us = card.querySelector('select[data-unit-for]');
+    const us = card.querySelector('select[data-unit-for]');
   if(us && shopCart[id]?.unit) us.value = shopCart[id].unit;
+  updateSidebarCartBadge();
 }
 window.setShopTab = (tab) => {
   shopTab = tab;
@@ -1499,6 +1500,7 @@ function shopCartBar(){
   if(existing){
     existing.querySelector('.cart-count').textContent = count;
     existing.querySelector('.cart-total-amount').textContent = money(total);
+    updateSidebarCartBadge();
     return;
   }
   const bar = document.createElement('div');
@@ -1506,6 +1508,44 @@ function shopCartBar(){
   bar.onclick = () => setShopTab('cart');
   bar.innerHTML = '<div class="cart-info"><span style="font-size:20px">🛒</span><span class="cart-count">' + count + '</span><span>View Cart</span></div><div style="display:flex;align-items:center;gap:6px"><span class="cart-total-amount">' + money(total) + '</span><span style="font-size:18px">→</span></div>';
   document.body.appendChild(bar);
+}
+  function updateSidebarCartBadge(){
+  const cartCount = Object.values(shopCart).reduce((s,x)=>s+(x.q||0),0);
+  const link = document.querySelector('[data-cart-link]');
+  if(link){
+    let badge = link.querySelector('.badge-n');
+    if(cartCount > 0){
+      if(!badge){ badge = document.createElement('span'); badge.className = 'badge-n'; link.appendChild(badge); }
+      badge.textContent = cartCount;
+    } else if(badge){ badge.remove(); }
+  }
+  // Update top bar cart button
+  document.querySelectorAll('.topbar-actions .btn-gray').forEach(btn => {
+    if(btn.textContent.includes('Cart')){
+      const existing = btn.querySelector('.cart-num');
+      if(cartCount > 0){
+        if(existing){ existing.textContent = cartCount; }
+        else {
+          const span = document.createElement('span');
+          span.className = 'cart-num';
+          span.style.cssText = 'background:var(--danger);color:#fff;font-size:10px;padding:2px 6px;border-radius:999px;margin-left:4px;font-weight:800';
+          span.textContent = cartCount;
+          btn.appendChild(span);
+        }
+      } else if(existing){ existing.remove(); }
+    }
+  });
+}
+  });
+  // Update top cart button badge
+  const topCartBtn = document.querySelector('.topbar-actions .btn-gray');
+  if(topCartBtn){
+    const badge = topCartBtn.querySelector('span');
+    if(badge){
+      badge.textContent = cartCount || '';
+      badge.style.display = cartCount > 0 ? 'inline-block' : 'none';
+    }
+  }
 }
 
 function renderShopAuth(){
