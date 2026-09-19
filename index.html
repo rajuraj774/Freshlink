@@ -1337,8 +1337,13 @@ window.setShopCat = (c) => { shopCat = c; renderShop(); };
 window.shopPlus = (id) => { shopCart[id] = shopCart[id]||{q:0}; shopCart[id].q++; localStorage.setItem('shop_cart',JSON.stringify(shopCart)); renderShop(); };
 window.shopMinus = (id) => { if(!shopCart[id]) return; shopCart[id].q--; if(shopCart[id].q<=0) delete shopCart[id]; localStorage.setItem('shop_cart',JSON.stringify(shopCart)); renderShop(); };
 window.setShopTab = (tab) => { shopTab = tab; shopSubPage = null; renderShop(); };
-window.openShopSub = function(sub){ if(sub === 'cart'){ shopTab = 'cart'; shopSubPage = null; } else if(sub === 'orders'){ shopSubPage = 'orders'; } renderShop(); };
-window.closeShopSub = function(){ shopSubPage = null; renderShop(); };
+window.openShopSub = function(sub){
+  if(sub === 'cart'){ shopTab = 'cart'; shopSubPage = null; }
+  else if(sub === 'orders'){ shopTab = 'me'; shopSubPage = 'orders'; }
+  renderShop();
+  document.querySelector('.sidebar')?.classList.remove('open');
+  document.querySelector('.overlay')?.classList.remove('show');
+};
 
 function renderShopCartPage(){
   const items = shopCartItems();
