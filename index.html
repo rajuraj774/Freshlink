@@ -1412,7 +1412,7 @@ function shopProductCards(){
               ${unitList.map(u => `<option value="${u}" ${currentUnit === u ? 'selected' : ''}>${u} (${p.units[u]} pcs)</option>`).join('')}
             </select>
           </div>
-        ` : ''}
+        ` : ''}`
         <div class="qty-control">
           ${outOfStock 
             ? '<button class="qty-add" disabled style="opacity:0.5;background:var(--muted)">Out of stock</button>'
