@@ -27,7 +27,7 @@
   --primary-light:#064e3b;--primary-50:#022c22;--danger-light:#7f1d1d;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-anchor:none}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
 button{font-family:inherit;cursor:pointer;border:0;background:transparent}
 input,select,textarea{font-family:inherit;font-size:14px}
 img{max-width:100%;display:block}
@@ -78,8 +78,8 @@ h3{font-size:16px;font-weight:700}
 @media(min-width:900px){.prod-grid{grid-template-columns:repeat(4,1fr)}}
 .prod{background:var(--card);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow-sm);border:1px solid var(--border-soft)}
 .prod-img-wrap{position:relative;overflow:hidden;background:var(--bg-soft)}
-.prod img{width:100%;height:110px;object-fit:cover}
-.prod .noimg{width:100%;height:110px;display:flex;align-items:center;justify-content:center;font-size:36px;color:var(--muted-soft);background:var(--bg-soft)}
+.prod img{width:100%;height:150px;object-fit:cover}
+.prod .noimg{width:100%;height:150px;display:flex;align-items:center;justify-content:center;font-size:48px;color:var(--muted-soft);background:var(--bg-soft)}
 .prod-badges{position:absolute;top:8px;left:8px;display:flex;flex-direction:column;gap:4px;z-index:2}
 .prod-badge{background:var(--accent);color:#fff;padding:3px 8px;border-radius:var(--r-sm);font-size:10.5px;font-weight:800}
 .prod-badge.out{background:var(--muted)}
@@ -100,10 +100,18 @@ h3{font-size:16px;font-weight:700}
 .carousel-item .noimg{width:100%;height:90px;border-radius:var(--r-sm);background:var(--bg-soft);display:flex;align-items:center;justify-content:center;font-size:36px;color:var(--muted-soft)}
 .carousel-item h5{font-size:12px;font-weight:700;margin:8px 4px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .carousel-item .cp{font-size:14px;font-weight:800;color:var(--primary);margin-bottom:8px}
-.cartbar{position:fixed;bottom:20px;left:16px;right:16px;max-width:860px;margin:0 auto;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:14px 20px;border-radius:var(--r-lg);display:flex;justify-content:space-between;align-items:center;box-shadow:0 12px 32px rgba(16,185,129,0.4);cursor:pointer;font-weight:800;z-index:30;animation:slideUp 0.3s ease}
+.cartbar{position:fixed;bottom:84px;left:16px;right:16px;max-width:860px;margin:0 auto;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:14px 20px;border-radius:var(--r-lg);display:flex;justify-content:space-between;align-items:center;box-shadow:0 12px 32px rgba(16,185,129,0.4);cursor:pointer;font-weight:800;z-index:30}
 .cartbar .cart-info{display:flex;align-items:center;gap:10px}
 .cartbar .cart-count{background:rgba(255,255,255,0.25);padding:4px 10px;border-radius:var(--r-full);font-size:12px;font-weight:800}
-@keyframes slideUp{from{transform:translateY(120px);opacity:0}to{transform:translateY(0);opacity:1}}
+.shop-header{background:linear-gradient(135deg,#10b981 0%,#059669 60%,#047857 100%);color:#fff;padding:24px 20px 32px;border-radius:0 0 var(--r-2xl) var(--r-2xl);position:sticky;top:0;z-index:20}
+.shop-header-inner{max-width:900px;margin:0 auto}
+.shop-header-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px}
+.shop-brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px}
+.shop-brand .icon{font-size:22px}
+.shop-greeting{font-size:22px;font-weight:800;margin-bottom:4px}
+.shop-sub{opacity:0.9;font-size:13.5px;font-weight:500}
+.shop-header .searchbar{margin-top:16px;background:rgba(255,255,255,0.95);border:0}
+.shop-header .searchbar input{color:#0f172a}
 .sidebar{width:var(--sidebar-w);background:var(--card);border-right:1px solid var(--border-soft);padding:20px 14px;position:fixed;top:0;bottom:0;left:0;overflow-y:auto;z-index:50;transition:transform var(--transition)}
 .sidebar-brand{display:flex;align-items:center;gap:10px;padding:8px 10px 22px;border-bottom:1px solid var(--border-soft);margin-bottom:16px}
 .sidebar-brand .icon{width:38px;height:38px;border-radius:var(--r);background:linear-gradient(135deg,var(--primary),var(--primary-dark));display:flex;align-items:center;justify-content:center;font-size:20px}
@@ -172,6 +180,12 @@ h3{font-size:16px;font-weight:700}
 .msg-ok{background:var(--primary-light);color:var(--primary-dark)}
 .msg-err{background:var(--danger-light);color:#991b1b}
 .msg-info{background:#dbeafe;color:#1e40af}
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border-soft);padding:8px 0 10px;z-index:40;box-shadow:0 -4px 16px rgba(0,0,0,0.06)}
+.bottom-nav-inner{display:flex;justify-content:space-around;align-items:center;max-width:600px;margin:0 auto}
+.bottom-nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 16px;border-radius:var(--r);font-size:10.5px;font-weight:700;color:var(--muted);cursor:pointer;position:relative}
+.bottom-nav-item .ic{font-size:20px}
+.bottom-nav-item.active{color:var(--primary)}
+.bottom-nav-item .badge-n{position:absolute;top:2px;right:8px;background:var(--danger);color:#fff;font-size:9px;padding:1px 5px;border-radius:var(--r-full);font-weight:800}
 .bar-row{display:flex;align-items:center;gap:12px;padding:10px 0}
 .bar-label{flex:1;font-size:13px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bar-value{font-size:13px;font-weight:800;color:var(--primary);white-space:nowrap}
@@ -192,6 +206,10 @@ h3{font-size:16px;font-weight:700}
   .card{padding:16px}
   .modal-box{padding:22px}
   .tbl th,.tbl td{padding:10px 8px;font-size:12.5px}
+  .shop-header{padding:20px 16px 28px}
+  .shop-greeting{font-size:19px}
+  .prod img{height:130px}
+  .prod .noimg{height:130px;font-size:40px}
 }
 </style>
 </head>
@@ -260,7 +278,7 @@ window.toggleTheme = function(){
   const next = current === 'dark' ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
   localStorage.setItem('theme', next);
-  if(isAdminView()) render(); else renderShop();
+  render();
 };
 
 function toast(msg){
@@ -382,7 +400,8 @@ let authTab = 'login';
 
 function isAdminView(){ return !new URLSearchParams(location.search).get('shop'); }
 function render(){ if(!loggedIn){ renderLogin(); return; } renderAdmin(); }
-  function renderLogin(){
+
+function renderLogin(){
   app().innerHTML = `
     <div class="auth-page">
       <div class="auth-box" style="text-align:center">
@@ -417,7 +436,9 @@ window.go = (view) => {
   document.querySelector('.overlay')?.classList.remove('show');
   renderAdmin();
 };
-
+  /* ═══════════════════════════════════════════════════════════
+   ADMIN SHELL
+   ═══════════════════════════════════════════════════════════ */
 function renderAdmin(){
   const views = {
     dashboard: {title:'Dashboard', render: viewDashboard},
@@ -591,60 +612,41 @@ function viewProducts(){
     </div>
     <div class="card">
       <div class="tbl-wrap"><table class="tbl">
-        <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Units</th><th>Stock</th><th style="text-align:right">Actions</th></tr></thead>
-        <tbody>${list.map(p=>{
-          const unitCount = Object.keys(p.units||{Piece:1}).length;
-          return `<tr>
+        <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th style="text-align:right">Actions</th></tr></thead>
+        <tbody>${list.map(p=>`
+          <tr>
             <td><div style="display:flex;align-items:center;gap:12px">
               ${p.img ? `<img src="${p.img}" style="width:44px;height:44px;border-radius:12px;object-fit:cover" onerror="this.style.display='none'">` : `<div style="width:44px;height:44px;border-radius:12px;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;font-size:20px">📦</div>`}
               <div><div style="font-weight:700;font-size:13.5px">${p.name}</div><div class="muted" style="font-size:11.5px">${p.pack||''}</div></div>
             </div></td>
             <td><span class="tag tag-delivered">${CATEGORY_EMOJI[p.cat]||''} ${p.cat}</span></td>
-            <td><b>${money(p.price)}</b><div class="muted" style="font-size:11px">/piece</div></td>
-            <td><span class="tag tag-approved">${unitCount} unit${unitCount>1?'s':''}</span></td>
+            <td><b>${money(p.price)}</b></td>
             <td><b style="color:${(p.stock||0)<20?'var(--danger)':'var(--primary)'}">${p.stock||0}</b></td>
             <td style="text-align:right;white-space:nowrap">
               <button class="btn btn-gray btn-sm" onclick="editProduct('${p.id}')">Edit</button>
               <button class="btn btn-danger btn-sm" onclick="delProduct('${p.id}')">Del</button>
             </td>
-          </tr>`;
-        }).join('')}</tbody>
+          </tr>`).join('')}</tbody>
       </table></div>
       ${!list.length?'<div class="empty"><span class="ico">📦</span><h3>No products</h3></div>':''}
     </div>`;
 }
 function viewProductForm(id){
-  const p = id ? DB.products.find(x=>x.id===id) : {
-    id:0,name:'',price:0,pack:'',cat:DB.categories[0],img:'',stock:0,sku:'',
-    units:{Piece:1,Box:12,Case:48,Carton:96}
-  };
-  const units = p.units || {Piece:1,Box:12,Case:48,Carton:96};
+  const p = id ? DB.products.find(x=>x.id===id) : {id:0,name:'',price:0,pack:'',cat:DB.categories[0],img:'',stock:0,sku:''};
   return `
-    <div class="card" style="max-width:720px">
+    <div class="card" style="max-width:640px">
       <h3 style="margin-bottom:16px">${id?'✏️ Edit':'➕ Add'} Product</h3>
       <div class="form-row">
         <div class="field"><label>Name *</label><input id="f_name" value="${p.name}"></div>
         <div class="field"><label>SKU</label><input id="f_sku" value="${p.sku||''}"></div>
       </div>
       <div class="form-row">
-        <div class="field"><label>Price per Piece (₹) *</label><input id="f_price" type="number" value="${p.price}"></div>
-        <div class="field"><label>Pack Size (e.g. 800 g)</label><input id="f_pack" value="${p.pack}"></div>
+        <div class="field"><label>Price (₹) *</label><input id="f_price" type="number" value="${p.price}"></div>
+        <div class="field"><label>Pack Size</label><input id="f_pack" value="${p.pack}"></div>
       </div>
       <div class="form-row">
         <div class="field"><label>Category *</label><select id="f_cat">${DB.categories.map(c=>`<option ${c===p.cat?'selected':''}>${c}</option>`).join('')}</select></div>
-        <div class="field"><label>Stock (total pieces)</label><input id="f_stock" type="number" value="${p.stock||0}"></div>
-      </div>
-      <div style="background:var(--bg-soft);border-radius:12px;padding:14px;margin-bottom:16px">
-        <div style="font-weight:800;font-size:13px;margin-bottom:10px">📦 Pack Units</div>
-        <p class="muted" style="font-size:11.5px;margin-bottom:12px">Enter how many pieces in each unit. Leave blank or 0 if not sold in that unit.</p>
-        <div class="form-row">
-          <div class="field"><label>Piece</label><input id="u_piece" type="number" value="${units.Piece||1}" min="1"></div>
-          <div class="field"><label>Box (pieces per box)</label><input id="u_box" type="number" value="${units.Box||''}" placeholder="e.g. 12"></div>
-        </div>
-        <div class="form-row">
-          <div class="field"><label>Case (pieces per case)</label><input id="u_case" type="number" value="${units.Case||''}" placeholder="e.g. 48"></div>
-          <div class="field"><label>Carton (pieces per carton)</label><input id="u_carton" type="number" value="${units.Carton||''}" placeholder="e.g. 96"></div>
-        </div>
+        <div class="field"><label>Stock</label><input id="f_stock" type="number" value="${p.stock||0}"></div>
       </div>
       <div class="field"><label>Image URL</label><input id="f_img" value="${p.img||''}" placeholder="https://..."></div>
       <div style="display:flex;gap:10px;margin-top:8px">
@@ -659,16 +661,7 @@ window.editProduct = (id) => {
   setTimeout(() => { $('content').innerHTML = viewProductForm(id); }, 50);
 };
 window.saveProduct = async function(id){
-  const units = { Piece: +$('u_piece').value || 1 };
-  const box = +$('u_box').value; if(box > 0) units.Box = box;
-  const cs = +$('u_case').value; if(cs > 0) units.Case = cs;
-  const ct = +$('u_carton').value; if(ct > 0) units.Carton = ct;
-  const data = {
-    name: $('f_name').value.trim(), sku: $('f_sku').value.trim(),
-    price: +$('f_price').value, pack: $('f_pack').value.trim(),
-    cat: $('f_cat').value, stock: +$('f_stock').value,
-    img: $('f_img').value.trim(), units: units
-  };
+  const data = { name: $('f_name').value.trim(), sku: $('f_sku').value.trim(), price: +$('f_price').value, pack: $('f_pack').value.trim(), cat: $('f_cat').value, stock: +$('f_stock').value, img: $('f_img').value.trim() };
   if(!data.name || !data.price){ toast('⚠️ Name and price required'); return; }
   const existing = id && id !== '0' ? DB.products.find(x=>x.id===id) : null;
   await saveProductDoc(existing ? {...existing, ...data} : data);
@@ -908,12 +901,11 @@ function viewShopPricing(){
     </div>
     <div class="card">
       <h3 style="margin-bottom:16px">💲 Custom Prices — ${shop.name}</h3>
-      <p class="muted" style="font-size:12px;margin-bottom:12px">Enter price per piece. Leave blank to use default.</p>
       <div class="tbl-wrap"><table class="tbl">
         <thead><tr><th>Product</th><th>Default</th><th>Custom</th></tr></thead>
         <tbody>${DB.products.map(p=>`<tr>
           <td><div style="font-weight:700;font-size:13px">${p.name}</div><div class="muted" style="font-size:11.5px">${p.pack||''}</div></td>
-          <td>${money(p.price)}<div class="muted" style="font-size:11px">/piece</div></td>
+          <td>${money(p.price)}</td>
           <td><input type="number" value="${shop.customPrices?.[p.id]||''}" placeholder="${p.price}" style="width:110px;padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);background:var(--card);color:var(--text);outline:0" onchange="setCustomPrice('${p.id}',this.value)"></td>
         </tr>`).join('')}</tbody>
       </table></div>
@@ -942,7 +934,7 @@ function viewOrders(status){
         </div>
         <div style="text-align:right"><div class="order-total">${money(o.total)}</div><div class="muted" style="font-size:11.5px">${(o.items||[]).length} item(s)</div></div>
       </div>
-      <div class="order-items">${(o.items||[]).map(it=>`<div class="order-item"><span>${it.name} ${it.unit?'<b>('+it.unit+')</b>':''} × ${it.qty}</span><b>${money(it.total)}</b></div>`).join('')}</div>
+      <div class="order-items">${(o.items||[]).map(it=>`<div class="order-item"><span>${it.name} × ${it.qty}</span><b>${money(it.total)}</b></div>`).join('')}</div>
       <div class="order-actions">
         <select onchange="changeOrderStatus('${o.id}',this.value)" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);font-weight:700;font-size:13px">
           ${['New','Accepted','Packed','Dispatched','Delivered'].map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('')}
@@ -1053,7 +1045,8 @@ window.saveSettings = async function(){
   await saveSettingsDoc();
   toast('✅ Saved'); renderAdmin();
 };
-  /* ═══════════════════════════════════════════════════════════
+
+/* ═══════════════════════════════════════════════════════════
    SHOP OWNER APP
    ═══════════════════════════════════════════════════════════ */
 function renderShop(){
@@ -1072,19 +1065,33 @@ function renderShop(){
   const myOrders = DB.orders.filter(o => o.mobile === shopAccount.mobile);
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
-  app().innerHTML = renderShopShell(cartCount, myOrders, isDark);
-
+  // Determine content based on current tab
+  let content = '';
+  if(shopTab === 'cart'){ 
+    app().innerHTML = renderShopShell(content, cartCount, myOrders, isDark);
+    setTimeout(() => { document.getElementById('shopContent').innerHTML = renderShopCartContent(); }, 0);
+    return;
+  }
+  if(shopTab === 'me'){
+    if(shopSubPage === 'orders'){
+      app().innerHTML = renderShopShell(content, cartCount, myOrders, isDark);
+      setTimeout(() => { document.getElementById('shopContent').innerHTML = renderShopOrdersContent(); }, 0);
+      return;
+    } else {
+      app().innerHTML = renderShopShell(content, cartCount, myOrders, isDark);
+      setTimeout(() => { document.getElementById('shopContent').innerHTML = renderShopMeContent(); }, 0);
+      return;
+    }
+  }
+  // Default: shop tab
+  app().innerHTML = renderShopShell('SHOP_HOME', cartCount, myOrders, isDark);
   setTimeout(() => {
-    const content = document.getElementById('shopContent');
-    if(!content) return;
-    if(shopTab === 'cart'){ content.innerHTML = renderShopCartContent(); }
-    else if(shopSubPage === 'orders'){ content.innerHTML = renderShopOrdersContent(); }
-    else if(shopTab === 'me'){ content.innerHTML = renderShopMeContent(); }
-    else { content.innerHTML = renderShopHomeContent(); shopCartBar(); }
+    document.getElementById('shopContent').innerHTML = renderShopHomeContent();
+    shopCartBar();
   }, 0);
 }
 
-function renderShopShell(cartCount, myOrders, isDark){
+function renderShopShell(tab, cartCount, myOrders, isDark){
   return `
     <div class="overlay" onclick="closeSidebar()"></div>
     <aside class="sidebar" id="sidebar">
@@ -1097,7 +1104,7 @@ function renderShopShell(cartCount, myOrders, isDark){
       </div>
       <nav class="menu">
         <a class="${shopTab==='shop'?'active':''}" onclick="setShopTab('shop')"><span class="ic">🏠</span>Shop</a>
-        <a class="${shopTab==='cart'?'active':''}" onclick="setShopTab('cart')" data-cart-link><span class="ic">🛒</span>My Cart ${cartCount?`<span class="badge-n">${cartCount}</span>`:''}</a>
+        <a class="${shopTab==='cart'?'active':''}" onclick="setShopTab('cart')"><span class="ic">🛒</span>My Cart ${cartCount?`<span class="badge-n">${cartCount}</span>`:''}</a>
         <a class="${shopTab==='me'&&!shopSubPage?'active':''}" onclick="setShopTab('me')"><span class="ic">👤</span>My Account</a>
         <div class="menu-group">📦 Orders</div>
         <a class="${(shopTab==='me' && shopSubPage==='orders')?'active':''}" onclick="openShopSub('orders')"><span class="ic">📋</span>Order History ${myOrders.length?`<span class="badge-n" style="background:var(--primary)">${myOrders.length}</span>`:''}</a>
@@ -1143,8 +1150,7 @@ function renderShopHomeContent(){
       <h3 style="font-size:16px;font-weight:800">📦 All Products</h3>
       <span class="muted" style="font-size:12.5px">${DB.products.length} items</span>
     </div>
-    <div class="prod-grid" id="shgrid">${shopProductCards()}</div>
-    <div style="height:200px"></div>`;
+    <div class="prod-grid" id="shgrid">${shopProductCards()}</div>`;
 }
 
 function renderShopCartContent(){
@@ -1154,10 +1160,7 @@ function renderShopCartContent(){
     ${items.length ? `
       <div class="card" style="margin-bottom:16px">
         ${items.map(x=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border-soft)">
-          <div style="flex:1">
-            <div style="font-weight:700;font-size:14px">${x.p.name}</div>
-            <div class="muted" style="font-size:12px">${x.q} ${x.unit}${x.q>1?'s':''} × ${money(x.price / x.mult)} = ${money(x.price)}</div>
-          </div>
+          <div style="flex:1"><div style="font-weight:700;font-size:14px">${x.p.name}</div><div class="muted" style="font-size:12px">${x.q} × ${money(x.price)}</div></div>
           <div style="display:flex;align-items:center;gap:8px">
             <div class="qty-control" style="width:120px"><button class="qty-btn" onclick="shopMinus('${x.p.id}')">−</button><div class="qty-count">${x.q}</div><button class="qty-btn" onclick="shopPlus('${x.p.id}')">+</button></div>
             <div style="font-weight:800;min-width:60px;text-align:right">${money(x.total)}</div>
@@ -1241,7 +1244,7 @@ function renderShopOrdersContent(){
         </div>
         <div style="background:var(--bg-soft);border-radius:12px;padding:12px 14px">
           ${(o.items||[]).map(it=>`<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;border-bottom:1px dashed var(--border)">
-            <span style="flex:1">${it.name} ${it.unit?'('+it.unit+')':''}</span><span class="muted" style="margin:0 10px">× ${it.qty}</span><b>${money(it.total)}</b>
+            <span style="flex:1">${it.name}</span><span class="muted" style="margin:0 10px">× ${it.qty}</span><b>${money(it.total)}</b>
           </div>`).join('')}
         </div>
         <div style="display:flex;gap:8px;margin-top:12px">
@@ -1251,74 +1254,6 @@ function renderShopOrdersContent(){
       </div>
     `).join('') : `<div class="card"><div class="empty"><span class="ico">📦</span><h3>No orders yet</h3><button class="btn btn-primary" style="margin-top:16px" onclick="setShopTab('shop')">Shop Now →</button></div></div>`}`;
 }
-
-window.reorderItems = function(orderId){
-  const order = DB.orders.find(o => o.id === orderId);
-  if(!order || !order.items?.length){ toast('Order not found'); return; }
-  let added = 0;
-  order.items.forEach(it => {
-    let product = null;
-    if(it.pid) product = DB.products.find(p => String(p.id) === String(it.pid));
-    if(!product && it.name) product = DB.products.find(p => p.name === it.name);
-    if(product){
-      shopCart[product.id] = shopCart[product.id] || {q: 0, unit: it.unit || 'Piece'};
-      if(it.unit) shopCart[product.id].unit = it.unit;
-      shopCart[product.id].q += (it.qty || 1);
-      added++;
-    }
-  });
-  if(added === 0){ toast('⚠️ Products unavailable'); return; }
-  localStorage.setItem('shop_cart', JSON.stringify(shopCart));
-  toast(`✅ ${added} item(s) added`);
-  shopTab = 'cart'; shopSubPage = null;
-  setTimeout(() => renderShop(), 300);
-};
-
-window.printOrder = function(orderId){
-  const o = DB.orders.find(x => x.id === orderId);
-  if(!o){ toast('Order not found'); return; }
-  var rowsHtml = '';
-  (o.items || []).forEach(function(it){
-    var unit = it.unit ? ' (' + it.unit + ')' : '';
-    rowsHtml += '<tr><td>' + it.name + unit + '</td><td>' + it.qty + '</td><td>₹' + it.price + '</td><td style="text-align:right">₹' + it.total + '</td></tr>';
-  });
-  var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Order #' + o.id + '</title><style>' +
-    'body{font-family:Arial,sans-serif;padding:24px;max-width:600px;margin:auto;color:#111}' +
-    'h1{margin:0 0 4px;font-size:20px}' +
-    '.shop-info{color:#666;font-size:13px;margin-bottom:20px}' +
-    'table{width:100%;border-collapse:collapse;margin:20px 0}' +
-    'th{text-align:left;padding:10px 8px;border-bottom:2px solid #111;font-size:12px}' +
-    'td{padding:10px 8px;border-bottom:1px solid #eee;font-size:13px}' +
-    '.total{display:flex;justify-content:space-between;font-size:18px;font-weight:800;padding-top:14px;border-top:2px solid #111;margin-top:8px}' +
-    '.footer{margin-top:30px;font-size:11px;color:#888;text-align:center}' +
-    '</style></head><body>' +
-    '<h1>' + DB.settings.businessName + '</h1>' +
-    '<div class="shop-info">' + (DB.settings.address || '') + '<br>Order #' + o.id + ' • ' + new Date(o.date).toLocaleString('en-IN') + '</div>' +
-    '<div><b>Shop:</b> ' + o.shopName + '</div>' +
-    '<div><b>Mobile:</b> ' + o.mobile + '</div>' +
-    '<table><thead><tr><th>Item</th><th>Qty</th><th>Price</th><th style="text-align:right">Total</th></tr></thead><tbody>' +
-    rowsHtml +
-    '</tbody></table>' +
-    '<div class="total"><span>Total</span><span>₹' + o.total + '</span></div>' +
-    '<div class="footer">Thank you for your business!</div>' +
-    '</body></html>';
-
-  var modal = document.createElement('div');
-  modal.className = 'print-modal';
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;display:flex;flex-direction:column;padding:20px';
-  modal.innerHTML = '<div style="background:#fff;border-radius:16px;padding:16px;max-width:800px;width:100%;margin:auto;max-height:90vh;display:flex;flex-direction:column">' +
-    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
-    '<b style="font-size:15px">Order #' + o.id + '</b>' +
-    '<div style="display:flex;gap:8px">' +
-    '<button onclick="this.closest(\'.print-modal\').querySelector(\'iframe\').contentWindow.print()" style="background:#10b981;color:#fff;border:0;padding:8px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px">🖨️ Print</button>' +
-    '<button onclick="this.closest(\'.print-modal\').remove()" style="background:#eee;color:#333;border:0;padding:8px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px">Close</button>' +
-    '</div></div>' +
-    '<iframe style="flex:1;border:1px solid #ddd;border-radius:12px;background:#fff;width:100%;min-height:400px"></iframe>' +
-    '</div>';
-  document.body.appendChild(modal);
-  var iframe = modal.querySelector('iframe');
-  iframe.srcdoc = html;
-};
 
 function renderBuyAgain(){
   if(!DB.orders.length) return '';
@@ -1340,11 +1275,10 @@ function renderBuyAgain(){
       ${topProducts.map(p=>{
         const price = shop?.customPrices?.[p.id] ?? p.price;
         const qty = shopCart[p.id]?.q || 0;
-        const firstUnit = Object.keys(p.units || {Piece:1})[0];
         return `<div class="carousel-item">
           ${p.img ? `<img src="${p.img}" onerror="this.outerHTML='<div class=noimg>📦</div>'">` : '<div class="noimg">📦</div>'}
           <h5>${p.name}</h5>
-          <div class="cp">${money(price)} <span style="font-size:10px;color:var(--muted)">/${firstUnit}</span></div>
+          <div class="cp">${money(price)}</div>
           <div style="display:flex;align-items:center;gap:4px;justify-content:center">
             ${qty > 0
               ? `<button class="qty-btn" style="height:32px;font-size:16px;max-width:38px" onclick="shopMinus('${p.id}')">−</button>
@@ -1371,9 +1305,7 @@ function shopProductCards(){
     const discountPct = hasDiscount ? Math.round(((p.price - customPrice) / p.price) * 100) : 0;
     const outOfStock = (p.stock||0) <= 0;
     const qty = shopCart[p.id]?.q || 0;
-    const unitList = Object.keys(p.units || {Piece:1});
-    const currentUnit = shopCart[p.id]?.unit || unitList[0] || 'Piece';
-    return `<div class="prod" data-id="${p.id}">
+    return `<div class="prod">
       <div class="prod-img-wrap">
         <div class="prod-badges">
           ${outOfStock ? '<span class="prod-badge out">OUT OF STOCK</span>' : ''}
@@ -1388,13 +1320,6 @@ function shopProductCards(){
           <span class="prod-price">${money(price)}</span>
           ${hasDiscount ? `<span class="prod-price-old">${money(p.price)}</span>` : ''}
         </div>
-        ${unitList.length > 1 ? `
-          <div style="margin-bottom:6px">
-            <select data-unit-for="${p.id}" onchange="changeCartUnit('${p.id}', this.value)" style="width:100%;padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-size:12px;font-weight:700;outline:0">
-              ${unitList.map(u => `<option value="${u}" ${currentUnit === u ? 'selected' : ''}>${u} (${p.units[u]} pcs)</option>`).join('')}
-            </select>
-          </div>
-        ` : ''}
         <div class="qty-control">
           ${outOfStock 
             ? '<button class="qty-add" disabled style="opacity:0.5;background:var(--muted)">Out of stock</button>'
@@ -1409,61 +1334,9 @@ function shopProductCards(){
 
 window.shopSearch = () => { window._shq = $('shq').value; $('shgrid').innerHTML = shopProductCards(); };
 window.setShopCat = (c) => { shopCat = c; renderShop(); };
-window.shopPlus = (id) => {
-  const p = DB.products.find(x => String(x.id) === String(id));
-  if(!p) return;
-  const defaultUnit = Object.keys(p.units || {Piece:1})[0];
-  shopCart[id] = shopCart[id] || {q:0, unit: defaultUnit};
-  if(!shopCart[id].unit) shopCart[id].unit = defaultUnit;
-  shopCart[id].q++;
-  localStorage.setItem('shop_cart', JSON.stringify(shopCart));
-  updateCardQty(id);
-  shopCartBar();
-};
-window.shopMinus = (id) => {
-  if(!shopCart[id]) return;
-  shopCart[id].q--;
-  if(shopCart[id].q <= 0) delete shopCart[id];
-  localStorage.setItem('shop_cart', JSON.stringify(shopCart));
-  updateCardQty(id);
-  shopCartBar();
-};
-window.changeCartUnit = (id, unit) => {
-  shopCart[id] = shopCart[id] || {q:0};
-  shopCart[id].unit = unit;
-  localStorage.setItem('shop_cart', JSON.stringify(shopCart));
-  updateCardQty(id);
-  shopCartBar();
-};
-
-function updateCardQty(id){
-  const p = DB.products.find(x => String(x.id) === String(id));
-  if(!p) return;
-  const card = document.querySelector('.prod[data-id="' + id + '"]');
-  if(!card) return;
-  const qty = shopCart[id]?.q || 0;
-  const outOfStock = (p.stock||0) <= 0;
-  const qc = card.querySelector('.qty-control');
-  if(qc){
-    if(outOfStock){
-      qc.innerHTML = '<button class="qty-add" disabled style="opacity:0.5;background:var(--muted)">Out of stock</button>';
-    } else if(qty > 0){
-      qc.innerHTML = '<button class="qty-btn" onclick="shopMinus(\'' + id + '\')">−</button><div class="qty-count">' + qty + '</div><button class="qty-btn" onclick="shopPlus(\'' + id + '\')">+</button>';
-    } else {
-      qc.innerHTML = '<button class="qty-add" onclick="shopPlus(\'' + id + '\')">ADD +</button>';
-    }
-  }
-    const us = card.querySelector('select[data-unit-for]');
-  if(us && shopCart[id]?.unit) us.value = shopCart[id].unit;
-  updateSidebarCartBadge();
-}
-window.setShopTab = (tab) => {
-  shopTab = tab;
-  shopSubPage = null;
-  renderShop();
-  document.querySelector('.sidebar')?.classList.remove('open');
-  document.querySelector('.overlay')?.classList.remove('show');
-};
+window.shopPlus = (id) => { shopCart[id] = shopCart[id]||{q:0}; shopCart[id].q++; localStorage.setItem('shop_cart',JSON.stringify(shopCart)); renderShop(); };
+window.shopMinus = (id) => { if(!shopCart[id]) return; shopCart[id].q--; if(shopCart[id].q<=0) delete shopCart[id]; localStorage.setItem('shop_cart',JSON.stringify(shopCart)); renderShop(); };
+window.setShopTab = (tab) => {   shopTab = tab;   shopSubPage = null;   renderShop();   document.querySelector('.sidebar')?.classList.remove('open');   document.querySelector('.overlay')?.classList.remove('show'); };
 window.openShopSub = function(sub){
   if(sub === 'cart'){ shopTab = 'cart'; shopSubPage = null; }
   else if(sub === 'orders'){ shopTab = 'me'; shopSubPage = 'orders'; }
@@ -1471,81 +1344,46 @@ window.openShopSub = function(sub){
   document.querySelector('.sidebar')?.classList.remove('open');
   document.querySelector('.overlay')?.classList.remove('show');
 };
-window.closeShopSub = function(){
-  shopSubPage = null;
-  renderShop();
-};
+
+function renderShopCartPage(){
+  const items = shopCartItems();
+  const total = items.reduce((s,x)=>s+x.total,0);
+  app().innerHTML = `
+    <div class="shop-header">
+      <div class="shop-header-inner">
+        <div class="shop-header-top">
+          <div><div class="shop-brand"><span class="icon">🛒</span> Your Cart</div><div class="shop-sub" style="margin-top:6px">${items.length} item${items.length!==1?'s':''}</div></div>
+          <button onclick="setShopTab('shop')" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.2);color:#fff;padding:9px 14px;border-radius:12px;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,0.15)">← Back</button>
+        </div>
+      </div>
+    </div>
+    <main style="max-width:600px;margin:0 auto;padding:16px;padding-bottom:140px">
+      ${items.length ? `
+        <div class="card" style="margin-bottom:16px">
+          ${items.map(x=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border-soft)">
+            <div style="flex:1"><div style="font-weight:700;font-size:14px">${x.p.name}</div><div class="muted" style="font-size:12px">${x.q} × ${money(x.price)}</div></div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="qty-control" style="width:120px"><button class="qty-btn" onclick="shopMinus('${x.p.id}')">−</button><div class="qty-count">${x.q}</div><button class="qty-btn" onclick="shopPlus('${x.p.id}')">+</button></div>
+              <div style="font-weight:800;min-width:60px;text-align:right">${money(x.total)}</div>
+            </div>
+          </div>`).join('')}
+          <div style="display:flex;justify-content:space-between;font-size:20px;font-weight:900;padding-top:16px;margin-top:6px;border-top:2px solid var(--border)"><span>Total</span><span style="color:var(--primary)">${money(total)}</span></div>
+        </div>
+        <button class="btn btn-primary btn-block btn-lg" onclick="shopPlaceOrder()">✅ Place Order</button>
+        <button class="btn btn-gray btn-block" style="margin-top:12px" onclick="setShopTab('shop')">← Continue</button>
+      ` : `<div class="card"><div class="empty"><span class="ico">🛒</span><h3>Cart is empty</h3><button class="btn btn-primary" style="margin-top:16px" onclick="setShopTab('shop')">Shop Now →</button></div></div>`}
+    </main>
+    ${renderBottomNav()}`;
+}
 
 function shopCartItems(){
   const shop = DB.shops.find(s=>s.mobile===shopAccount.mobile);
   return Object.entries(shopCart).map(([id,e])=>{
     const p = DB.products.find(x=>x.id==id);
     if(!p || !e.q) return null;
-    const unit = e.unit || 'Piece';
-    const mult = (p.units && p.units[unit]) ? p.units[unit] : 1;
-    const price = (shop?.customPrices?.[p.id] ?? p.price) * mult;
-    return {p, q: e.q, unit, mult, price, total: e.q * price};
+    const price = shop?.customPrices?.[p.id] ?? p.price;
+    return {p, q: e.q, price, total: e.q*price};
   }).filter(Boolean);
-}
-function shopCartBar(){
-  const existing = document.querySelector('.cartbar');
-  const items = shopCartItems();
-  const total = items.reduce((s,x)=>s+x.total,0);
-  const count = items.reduce((s,x)=>s+x.q,0);
-
-  if(!items.length){
-    if(existing){ existing.remove(); }
-    return;
-  }
-  if(existing){
-    existing.querySelector('.cart-count').textContent = count;
-    existing.querySelector('.cart-total-amount').textContent = money(total);
-    updateSidebarCartBadge();
-    return;
-  }
-  const bar = document.createElement('div');
-  bar.className = 'cartbar';
-  bar.onclick = () => setShopTab('cart');
-  bar.innerHTML = '<div class="cart-info"><span style="font-size:20px">🛒</span><span class="cart-count">' + count + '</span><span>View Cart</span></div><div style="display:flex;align-items:center;gap:6px"><span class="cart-total-amount">' + money(total) + '</span><span style="font-size:18px">→</span></div>';
-  document.body.appendChild(bar);
-}
-  function updateSidebarCartBadge(){
-  const cartCount = Object.values(shopCart).reduce((s,x)=>s+(x.q||0),0);
-  const link = document.querySelector('[data-cart-link]');
-  if(link){
-    let badge = link.querySelector('.badge-n');
-    if(cartCount > 0){
-      if(!badge){ badge = document.createElement('span'); badge.className = 'badge-n'; link.appendChild(badge); }
-      badge.textContent = cartCount;
-    } else if(badge){ badge.remove(); }
-  }
-  // Update top bar cart button
-  document.querySelectorAll('.topbar-actions .btn-gray').forEach(btn => {
-    if(btn.textContent.includes('Cart')){
-      const existing = btn.querySelector('.cart-num');
-      if(cartCount > 0){
-        if(existing){ existing.textContent = cartCount; }
-        else {
-          const span = document.createElement('span');
-          span.className = 'cart-num';
-          span.style.cssText = 'background:var(--danger);color:#fff;font-size:10px;padding:2px 6px;border-radius:999px;margin-left:4px;font-weight:800';
-          span.textContent = cartCount;
-          btn.appendChild(span);
-        }
-      } else if(existing){ existing.remove(); }
-    }
-  });
-}
-  });
-  // Update top cart button badge
-  const topCartBtn = document.querySelector('.topbar-actions .btn-gray');
-  if(topCartBtn){
-    const badge = topCartBtn.querySelector('span');
-    if(badge){
-      badge.textContent = cartCount || '';
-      badge.style.display = cartCount > 0 ? 'inline-block' : 'none';
-    }
-  }
 }
 
 function renderShopAuth(){
@@ -1691,13 +1529,13 @@ window.shopPlaceOrder = async function(){
   const total = items.reduce((s,x)=>s+x.total,0);
   const orderId = "FL" + Date.now().toString().slice(-6);
   const order = { id: orderId, shopName: shopAccount.name, mobile: shopAccount.mobile, date: new Date().toISOString(),
-    items: items.map(x=>({pid:x.p.id, name:x.p.name, qty:x.q, unit:x.unit, mult:x.mult, price:x.price, total:x.total})), total, status: 'New', paymentStatus: 'Unpaid' };
+    items: items.map(x=>({pid:x.p.id, name:x.p.name, qty:x.q, price:x.price, total:x.total})), total, status: 'New', paymentStatus: 'Unpaid' };
   await saveOrderDoc(order);
   let shop = DB.shops.find(s=>s.mobile===shopAccount.mobile);
   if(shop) await saveShopDoc({...shop, outstanding: (shop.outstanding||0) + total});
   if(DB.settings.callmebotKey && DB.settings.whatsapp){
     let msg = "🌿 NEW ORDER\n\nOrder: "+orderId+"\nShop: "+shopAccount.name+"\nMobile: "+shopAccount.mobile+"\n\n";
-    items.forEach(x=>{ msg += "• "+x.p.name+" ("+x.unit+") — "+x.q+" × "+money(x.price / x.mult)+" = "+money(x.total)+"\n"; });
+    items.forEach(x=>{ msg += "• "+x.p.name+" — "+x.q+" × "+money(x.price)+" = "+money(x.total)+"\n"; });
     msg += "\nTotal: "+money(total);
     const url = "https://api.callmebot.com/whatsapp.php?phone="+DB.settings.whatsapp+"&text="+encodeURIComponent(msg)+"&apikey="+DB.settings.callmebotKey;
     fetch(url,{mode:'no-cors'}).catch(()=>{});
@@ -1737,6 +1575,88 @@ window.shopPlaceOrder = async function(){
       <button onclick="location.reload()" class="btn btn-primary">🔄 Retry</button>
     </div>`;
   }
+  window.reorderItems = function(orderId){
+  const order = DB.orders.find(o => o.id === orderId);
+  if(!order || !order.items?.length){ toast('Order not found'); return; }
+  let added = 0;
+  order.items.forEach(it => {
+    let product = null;
+    if(it.pid) product = DB.products.find(p => String(p.id) === String(it.pid));
+    if(!product && it.name) product = DB.products.find(p => p.name === it.name);
+    if(product){
+      shopCart[product.id] = shopCart[product.id] || {q: 0};
+      shopCart[product.id].q += (it.qty || 1);
+      added++;
+    }
+  });
+  window.reorderItems = function(orderId){
+  const order = DB.orders.find(o => o.id === orderId);
+  if(!order || !order.items?.length){ toast('Order not found'); return; }
+  let added = 0;
+  order.items.forEach(it => {
+    let product = null;
+    if(it.pid) product = DB.products.find(p => String(p.id) === String(it.pid));
+    if(!product && it.name) product = DB.products.find(p => p.name === it.name);
+    if(product){
+      shopCart[product.id] = shopCart[product.id] || {q: 0};
+      shopCart[product.id].q += (it.qty || 1);
+      added++;
+    }
+  });
+  if(added === 0){ toast('⚠️ Products unavailable'); return; }
+  localStorage.setItem('shop_cart', JSON.stringify(shopCart));
+  toast(`✅ ${added} item(s) added`);
+  shopTab = 'cart'; shopSubPage = null;
+  setTimeout(() => renderShop(), 300);
+};
+
+window.printOrder = function(orderId){
+  const o = DB.orders.find(x => x.id === orderId);
+  if(!o){ toast('Order not found'); return; }
+
+  var rowsHtml = '';
+  (o.items || []).forEach(function(it){
+    rowsHtml += '<tr><td>' + it.name + '</td><td>' + it.qty + '</td><td>₹' + it.price + '</td><td style="text-align:right">₹' + it.total + '</td></tr>';
+  });
+
+  var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Order #' + o.id + '</title><style>' +
+    'body{font-family:Arial,sans-serif;padding:24px;max-width:600px;margin:auto;color:#111}' +
+    'h1{margin:0 0 4px;font-size:20px}' +
+    '.shop-info{color:#666;font-size:13px;margin-bottom:20px}' +
+    'table{width:100%;border-collapse:collapse;margin:20px 0}' +
+    'th{text-align:left;padding:10px 8px;border-bottom:2px solid #111;font-size:12px}' +
+    'td{padding:10px 8px;border-bottom:1px solid #eee;font-size:13px}' +
+    '.total{display:flex;justify-content:space-between;font-size:18px;font-weight:800;padding-top:14px;border-top:2px solid #111;margin-top:8px}' +
+    '.footer{margin-top:30px;font-size:11px;color:#888;text-align:center}' +
+    '</style></head><body>' +
+    '<h1>' + DB.settings.businessName + '</h1>' +
+    '<div class="shop-info">' + (DB.settings.address || '') + '<br>Order #' + o.id + ' • ' + new Date(o.date).toLocaleString('en-IN') + '</div>' +
+    '<div><b>Shop:</b> ' + o.shopName + '</div>' +
+    '<div><b>Mobile:</b> ' + o.mobile + '</div>' +
+    '<table><thead><tr><th>Item</th><th>Qty</th><th>Price</th><th style="text-align:right">Total</th></tr></thead><tbody>' +
+    rowsHtml +
+    '</tbody></table>' +
+    '<div class="total"><span>Total</span><span>₹' + o.total + '</span></div>' +
+    '<div class="footer">Thank you for your business!</div>' +
+    '</body></html>';
+
+  var modal = document.createElement('div');
+  modal.className = 'print-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;display:flex;flex-direction:column;padding:20px';
+  modal.innerHTML = '<div style="background:#fff;border-radius:16px;padding:16px;max-width:800px;width:100%;margin:auto;max-height:90vh;display:flex;flex-direction:column">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
+    '<b style="font-size:15px">Order #' + o.id + '</b>' +
+    '<div style="display:flex;gap:8px">' +
+    '<button onclick="this.closest(\'.print-modal\').querySelector(\'iframe\').contentWindow.print()" style="background:#10b981;color:#fff;border:0;padding:8px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px">🖨️ Print</button>' +
+    '<button onclick="this.closest(\'.print-modal\').remove()" style="background:#eee;color:#333;border:0;padding:8px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px">Close</button>' +
+    '</div></div>' +
+    '<iframe style="flex:1;border:1px solid #ddd;border-radius:12px;background:#fff;width:100%;min-height:400px"></iframe>' +
+    '</div>';
+  document.body.appendChild(modal);
+
+  var iframe = modal.querySelector('iframe');
+  iframe.srcdoc = html;
+};
 })();
 </script>
 </body>
