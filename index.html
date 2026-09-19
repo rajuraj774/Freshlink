@@ -1489,12 +1489,17 @@ function shopCartItems(){
 }
 function shopCartBar(){
   const existing = document.querySelector('.cartbar');
+  // Only show cart bar on the Shop tab (not Cart, not Me, not Orders)
+  if(shopTab !== 'shop'){
+    if(existing) existing.remove();
+    return;
+  }
   const items = shopCartItems();
   const total = items.reduce((s,x)=>s+x.total,0);
   const count = items.reduce((s,x)=>s+x.q,0);
 
   if(!items.length){
-    if(existing){ existing.remove(); }
+    if(existing) existing.remove();
     updateSidebarCartBadge();
     return;
   }
