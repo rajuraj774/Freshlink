@@ -1158,7 +1158,7 @@ function renderShopCartContent(){
         ${items.map(x=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border-soft)">
           <div style="flex:1">
             <div style="font-weight:700;font-size:14px">${x.p.name}</div>
-            <div class="muted" style="font-size:12px">${x.q} ${x.unit}${x.q>1?'s':''} × ${money(x.price / x.mult)} = ${money(x.price)}</div>
+            <div class="muted" style="font-size:12px">${x.q} ${x.unit}${x.q>1?'s':''} × ${money(x.price / x.mult)} = ${money(x.total)}</div>
           </div>
           <div style="display:flex;align-items:center;gap:8px">
             <div class="qty-control" style="width:120px"><button class="qty-btn" onclick="shopMinus('${x.p.id}')">−</button><div class="qty-count">${x.q}</div><button class="qty-btn" onclick="shopPlus('${x.p.id}')">+</button></div>
@@ -1421,23 +1421,37 @@ window.shopPlus = (id) => {
   if(!shopCart[id].unit) shopCart[id].unit = defaultUnit;
   shopCart[id].q++;
   localStorage.setItem('shop_cart', JSON.stringify(shopCart));
-  updateCardQty(id);
-  shopCartBar();
+  updateSidebarCartBadge();
+  if(shopTab === 'cart'){
+    document.getElementById('shopContent').innerHTML = renderShopCartContent();
+  } else {
+    updateCardQty(id);
+    shopCartBar();
+  }
 };
 window.shopMinus = (id) => {
   if(!shopCart[id]) return;
   shopCart[id].q--;
   if(shopCart[id].q <= 0) delete shopCart[id];
   localStorage.setItem('shop_cart', JSON.stringify(shopCart));
-  updateCardQty(id);
-  shopCartBar();
+  updateSidebarCartBadge();
+  if(shopTab === 'cart'){
+    document.getElementById('shopContent').innerHTML = renderShopCartContent();
+  } else {
+    updateCardQty(id);
+    shopCartBar();
+  }
 };
 window.changeCartUnit = (id, unit) => {
   shopCart[id] = shopCart[id] || {q:0};
   shopCart[id].unit = unit;
   localStorage.setItem('shop_cart', JSON.stringify(shopCart));
-  updateCardQty(id);
-  shopCartBar();
+  if(shopTab === 'cart'){
+    document.getElementById('shopContent').innerHTML = renderShopCartContent();
+  } else {
+    updateCardQty(id);
+    shopCartBar();
+  }
 };
 
 function updateCardQty(id){
