@@ -1684,7 +1684,9 @@ window.shopPlaceOrder = async function(){
     fetch(url,{mode:'no-cors'}).catch(()=>{});
   }
   shopCart = {};
-  localStorage.setItem('shop_cart','{}');
+  localStorage.removeItem('shop_cart');
+  updateSidebarCartBadge();
+  document.querySelector('.cartbar')?.remove();
   toast('✅ Order placed! #'+orderId);
   shopTab = 'shop'; shopSubPage = null;
   setTimeout(()=>renderShop(), 800);
