@@ -1166,16 +1166,7 @@ function renderShop(){
   if(acc && acc.status === 'Pending'){
     app().innerHTML = `<div class="auth-page"><div class="auth-box" style="text-align:center">
       <div class="auth-logo" style="background:linear-gradient(135deg,#f59e0b,#d97706)">⏳</div>
-      <h2>Registration Pending</h2>
-      <p class="sub">Awaiting approval from ${DB.settings.businessName}.</p>
-      <button class="btn btn-gray btn-block" onclick="shopLogout()">Logout</button>
-    </div></div>`;
-    return;
-  }
-  if(acc && acc.status === 'Rejected'){
-    app().innerHTML = `<div class="auth-page"><div class="auth-box" style="text-align:center">
-      <div class="auth-logo" style="background:linear-gradient(135deg,#ef4444,#dc2626)">❌</div>
-      <h2>Rejected</h2><p class="sub">Contact ${DB.settings.businessName}.</p>
+      <h2>Registration Pending</h2><p class="sub">Awaiting approval.</p>
       <button class="btn btn-gray btn-block" onclick="shopLogout()">Logout</button>
     </div></div>`;
     return;
@@ -1186,23 +1177,21 @@ function renderShop(){
     renderShopMePage(); return;
   }
   app().innerHTML = `
-    <div class="shop-header">
-      <div class="shop-header-inner">
-        <div class="shop-header-top">
-          <div>
-            <div class="shop-brand"><span class="icon">🌿</span> ${DB.settings.businessName}</div>
-            <div style="margin-top:14px">
-              <div class="shop-greeting">${greeting()}, ${shopAccount.name.split(' ')[0]}! 👋</div>
-              <div class="shop-sub">${DB.settings.tagline || 'What would you like to order today?'}</div>
-            </div>
+    <div class="shop-header"><div class="shop-header-inner">
+      <div class="shop-header-top">
+        <div>
+          <div class="shop-brand"><span class="icon">🌿</span> ${DB.settings.businessName}</div>
+          <div style="margin-top:14px">
+            <div class="shop-greeting">${greeting()}, ${shopAccount.name.split(' ')[0]}! 👋</div>
+            <div class="shop-sub">${DB.settings.tagline || 'Order FMCG. Delivered to Your Shop.'}</div>
           </div>
-          <button onclick="shopLogout()" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.2);color:#fff;padding:9px 14px;border-radius:12px;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,0.15)">
-            <span style="font-size:15px">🚪</span><span>Logout</span>
-          </button>
         </div>
-        <div class="searchbar"><span class="search-icon">🔍</span><input id="shq" placeholder="Search products..." oninput="shopSearch()"></div>
+        <button onclick="shopLogout()" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.2);color:#fff;padding:9px 14px;border-radius:12px;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,0.15)">
+          <span style="font-size:15px">🚪</span><span>Logout</span>
+        </button>
       </div>
-    </div>
+      <div class="searchbar"><span class="search-icon">🔍</span><input id="shq" placeholder="Search products..." oninput="shopSearch()"></div>
+    </div></div>
     <main style="max-width:900px;margin:0 auto;padding:16px;padding-bottom:140px">
       <div class="chips">${['All',...DB.categories].map(c=>`<button class="chip ${c===shopCat?'active':''}" onclick="setShopCat('${c}')">${c==='All'?'🛍️':(CATEGORY_EMOJI[c]||'📦')} ${c}</button>`).join('')}</div>
       ${renderBuyAgain()}
@@ -1215,6 +1204,104 @@ function renderShop(){
     ${renderBottomNav()}`;
   shopCartBar();
 }
+
+function renderShopMePage(){
+  const shop = DB.shops.find(s=>s.mobile===shopAccount.mobile);
+  const myOrders = DB.orders.filter(o => o.mobile === shopAccount.mobile);
+  const totalSpent = myOrders.reduce((s,o)=>s+o.total,0);
+  const outstanding = shop?.outstanding || 0;
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const cartCount = Object.values(shopCart).reduce((s,x)=>s+(x.q||0),0);
+  app().innerHTML = `
+    <div class="shop-header"><div class="shop-header-inner">
+      <div class="shop-header-top">
+        <div><div class="shop-brand"><span class="icon">👤</span> My Account</div><div class="shop-sub" style="margin-top:6px">Profile & orders</div></div>
+        <button onclick="setShopTab('shop')" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.2);color:#fff;padding:9px 14px;border-radius:12px;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,0.15)">← Back</button>
+      </div>
+    </div></div>
+    <main style="max-width:600px;margin:0 auto;padding:16px;padding-bottom:140px">
+      <div class="card" style="text-align:center;padding:28px 20px;margin-bottom:16px">
+        <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:26px;margin:0 auto 14px;box-shadow:0 8px 24px rgba(16,185,129,0.3)">${initials(shopAccount.name)}</div>
+        <h2 style="font-size:19px;font-weight:800">${shopAccount.name}</h2>
+        <p class="muted" style="margin-top:6px;font-size:13.5px">📱 ${shopAccount.mobile}</p>
+      </div>
+      <div class="stats" style="grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px">
+        <div class="stat green"><div class="icon-bg">📦</div><div class="lbl">Orders</div><div class="num">${myOrders.length}</div></div>
+        <div class="stat blue"><div class="icon-bg">💰</div><div class="lbl">Spent</div><div class="num">${money(totalSpent)}</div></div>
+      </div>
+      ${outstanding > 0 ? `<div class="card" style="background:linear-gradient(135deg,#fee2e2,#fecaca);border:1px solid #ef4444;padding:16px;margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:14px"><div style="font-size:36px">⚠️</div>
+          <div><div style="font-weight:800;color:#991b1b;font-size:13px">Outstanding</div><div style="font-size:24px;font-weight:900;color:#991b1b;margin-top:2px">${money(outstanding)}</div></div>
+        </div>
+      </div>` : ''}
+      <div class="card" style="padding:0;overflow:hidden">
+        <div onclick="openShopSub('cart')" class="row-link">
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="width:40px;height:40px;border-radius:12px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:18px">🛒</div>
+            <div><div style="font-weight:700;font-size:14px">My Cart</div><div class="muted" style="font-size:11.5px">${cartCount} item(s)</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">${cartCount?`<span class="tag tag-approved">${cartCount}</span>`:''}<span style="color:var(--muted);font-size:18px">→</span></div>
+        </div>
+        <div onclick="openShopSub('orders')" class="row-link">
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="width:40px;height:40px;border-radius:12px;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:18px">📦</div>
+            <div><div style="font-weight:700;font-size:14px">My Orders</div><div class="muted" style="font-size:11.5px">View history</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">${myOrders.length?`<span class="tag tag-approved">${myOrders.length}</span>`:''}<span style="color:var(--muted);font-size:18px">→</span></div>
+        </div>
+        <div onclick="toggleTheme()" class="row-link">
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="width:40px;height:40px;border-radius:12px;background:${isDark?'#1e3a8a':'#fef3c7'};display:flex;align-items:center;justify-content:center;font-size:18px">${isDark?'☀️':'🌙'}</div>
+            <div><div style="font-weight:700;font-size:14px">${isDark?'Light':'Dark'} Mode</div><div class="muted" style="font-size:11.5px">Change theme</div></div>
+          </div>
+          <span style="color:var(--muted);font-size:18px">→</span>
+        </div>
+        <div onclick="shopLogout()" class="row-link">
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="width:40px;height:40px;border-radius:12px;background:#fee2e2;display:flex;align-items:center;justify-content:center;font-size:18px">🚪</div>
+            <div><div style="font-weight:700;font-size:14px;color:var(--danger)">Logout</div><div class="muted" style="font-size:11.5px">Sign out</div></div>
+          </div>
+          <span style="color:var(--muted);font-size:18px">→</span>
+        </div>
+      </div>
+    </main>
+    ${renderBottomNav()}`;
+}
+
+function renderShopOrderHistory(){
+  const myOrders = DB.orders.filter(o => o.mobile === shopAccount.mobile);
+  app().innerHTML = `
+    <div class="shop-header"><div class="shop-header-inner">
+      <div class="shop-header-top">
+        <div><div class="shop-brand"><span class="icon">📦</span> Order History</div><div class="shop-sub" style="margin-top:6px">${myOrders.length} total order${myOrders.length!==1?'s':''}</div></div>
+        <button onclick="closeShopSub()" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.2);color:#fff;padding:9px 14px;border-radius:12px;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,0.15)">← Back</button>
+      </div>
+    </div></div>
+    <main style="max-width:600px;margin:0 auto;padding:16px;padding-bottom:140px">
+      ${myOrders.length ? myOrders.map(o=>`
+        <div class="card" style="padding:16px;margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px">
+            <div>
+              <div style="font-weight:800;font-size:14.5px">#${o.id}</div>
+              <div class="muted" style="font-size:11.5px;margin-top:3px">${new Date(o.date).toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
+              <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">${statusTag(o.status)} ${payTag(o.paymentStatus)}</div>
+            </div>
+            <div style="text-align:right"><div style="font-size:18px;font-weight:900">${money(o.total)}</div><div class="muted" style="font-size:11px">${(o.items||[]).length} item(s)</div></div>
+          </div>
+          <div style="background:var(--bg-soft);border-radius:12px;padding:12px 14px">
+            ${(o.items||[]).map(it=>`<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;border-bottom:1px dashed var(--border)">
+              <span style="flex:1">${it.name}</span><span class="muted" style="margin:0 10px">× ${it.qty}</span><b>${money(it.total)}</b>
+            </div>`).join('')}
+          </div>
+        </div>
+      `).join('') : `<div class="card"><div class="empty"><span class="ico">📦</span><h3>No orders yet</h3></div></div>`}
+    </main>
+    ${renderBottomNav()}`;
+}
+
+window.setShopTab = (tab) => { shopTab = tab; shopSubPage = null; renderShop(); };
+window.openShopSub = function(sub){ if(sub === 'cart'){ shopTab = 'cart'; shopSubPage = null; } else if(sub === 'orders'){ shopSubPage = 'orders'; } renderShop(); };
+window.closeShopSub = function(){ shopSubPage = null; renderShop(); };
 
 
 
