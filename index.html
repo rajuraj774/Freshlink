@@ -1349,7 +1349,7 @@ function renderBuyAgain(){
           ${p.img ? `<img src="${p.img}" onerror="this.outerHTML='<div class=noimg>📦</div>'">` : '<div class="noimg">📦</div>'}
           <h5>${p.name}</h5>
           <div class="cp">${money(price)} <span style="font-size:10px;color:var(--muted)">/${firstUnit}</span></div>
-          <div style="display:flex;align-items:center;gap:4px;justify-content:center">
+          <div class="carousel-qty-control" style="display:flex;align-items:center;gap:4px;justify-content:center">
             ${qty > 0
   ? `<button class="qty-btn" style="height:32px;font-size:16px;max-width:38px" onclick="event.stopPropagation();shopMinus('${p.id}')">−</button>
      <div class="qty-count" style="min-width:34px;height:32px;font-size:13px">${qty}</div>
@@ -1457,22 +1457,40 @@ window.changeCartUnit = (id, unit) => {
 function updateCardQty(id){
   const p = DB.products.find(x => String(x.id) === String(id));
   if(!p) return;
+  
+  // Update main product grid card if visible
   const card = document.querySelector('.prod[data-id="' + id + '"]');
-  if(!card) return;
-  const qty = shopCart[id]?.q || 0;
-  const outOfStock = (p.stock||0) <= 0;
-  const qc = card.querySelector('.qty-control');
-  if(qc){
-    if(outOfStock){
-      qc.innerHTML = '<button class="qty-add" disabled style="opacity:0.5;background:var(--muted)">Out of stock</button>';
-    } else if(qty > 0){
-      qc.innerHTML = '<button class="qty-btn" onclick="shopMinus(\'' + id + '\')">−</button><div class="qty-count">' + qty + '</div><button class="qty-btn" onclick="shopPlus(\'' + id + '\')">+</button>';
-    } else {
-      qc.innerHTML = '<button class="qty-add" onclick="shopPlus(\'' + id + '\')">ADD +</button>';
+  if(card){
+    const qty = shopCart[id]?.q || 0;
+    const outOfStock = (p.stock||0) <= 0;
+    const qc = card.querySelector('.qty-control');
+    if(qc){
+      if(outOfStock){
+        qc.innerHTML = '<button class="qty-add" disabled style="opacity:0.5;background:var(--muted)">Out of stock</button>';
+      } else if(qty > 0){
+        qc.innerHTML = '<button class="qty-btn" onclick="shopMinus(\'' + id + '\')">−</button><div class="qty-count">' + qty + '</div><button class="qty-btn" onclick="shopPlus(\'' + id + '\')">+</button>';
+      } else {
+        qc.innerHTML = '<button class="qty-add" onclick="shopPlus(\'' + id + '\')">ADD +</button>';
+      }
+    }
+    const us = card.querySelector('select[data-unit-for]');
+    if(us && shopCart[id]?.unit) us.value = shopCart[id].unit;
+  }
+  
+  // Update Buy Again carousel item if visible
+  const carouselItem = document.querySelector('.carousel-item[data-id="' + id + '"]');
+  if(carouselItem){
+    const qty = shopCart[id]?.q || 0;
+    const controls = carouselItem.querySelector('.carousel-qty-control');
+    if(controls){
+      if(qty > 0){
+        controls.innerHTML = '<button class="qty-btn" style="height:32px;font-size:16px;max-width:38px" onclick="event.stopPropagation();shopMinus(\'' + id + '\')">−</button><div class="qty-count" style="min-width:34px;height:32px;font-size:13px">' + qty + '</div><button class="qty-btn" style="height:32px;font-size:16px;max-width:38px" onclick="event.stopPropagation();shopPlus(\'' + id + '\')">+</button>';
+      } else {
+        controls.innerHTML = '<button class="qty-add" style="height:32px;font-size:12px" onclick="event.stopPropagation();shopPlus(\'' + id + '\')">ADD +</button>';
+      }
     }
   }
-  const us = card.querySelector('select[data-unit-for]');
-  if(us && shopCart[id]?.unit) us.value = shopCart[id].unit;
+  
   updateSidebarCartBadge();
 }
 window.setShopTab = (tab) => {
