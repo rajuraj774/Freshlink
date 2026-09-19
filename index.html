@@ -1148,6 +1148,8 @@ function renderShopHomeContent(){
 }
 
 function renderShopCartContent(){
+  // Remove cart bar when on cart page
+  document.querySelector('.cartbar')?.remove();
   const items = shopCartItems();
   const total = items.reduce((s,x)=>s+x.total,0);
   return `
@@ -1171,6 +1173,7 @@ function renderShopCartContent(){
 }
 
 function renderShopMeContent(){
+    document.querySelector('.cartbar')?.remove();
   const shop = DB.shops.find(s=>s.mobile===shopAccount.mobile);
   const myOrders = DB.orders.filter(o => o.mobile === shopAccount.mobile);
   const totalSpent = myOrders.reduce((s,o)=>s+o.total,0);
@@ -1227,6 +1230,7 @@ function renderShopMeContent(){
 }
 
 function renderShopOrdersContent(){
+    document.querySelector('.cartbar')?.remove();
   const myOrders = DB.orders.filter(o => o.mobile === shopAccount.mobile);
   return `
     ${myOrders.length ? myOrders.map(o=>`
