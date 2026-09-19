@@ -1394,9 +1394,7 @@ window.shopSearch = () => { window._shq = $('shq').value; $('shgrid').innerHTML 
 window.setShopCat = (c) => { shopCat = c; renderShop(); };
 window.shopPlus = (id) => { shopCart[id] = shopCart[id]||{q:0}; shopCart[id].q++; localStorage.setItem('shop_cart',JSON.stringify(shopCart)); renderShop(); };
 window.shopMinus = (id) => { if(!shopCart[id]) return; shopCart[id].q--; if(shopCart[id].q<=0) delete shopCart[id]; localStorage.setItem('shop_cart',JSON.stringify(shopCart)); renderShop(); };
-window.setShopTab = (tab) => { shopTab = tab; shopSubPage = null; renderShop(); setTimeout(() => window.scrollTo({top: 0, behavior: 'smooth'}), 50); };
-window.openShopSub = function(sub){ if(sub === 'cart'){ shopTab = 'cart'; shopSubPage = null; } else if(sub === 'orders'){ shopSubPage = 'orders'; } renderShop(); };
-window.closeShopSub = function(){ shopSubPage = null; renderShop(); };
+
 
 
 
