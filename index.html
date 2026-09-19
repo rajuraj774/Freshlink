@@ -100,7 +100,9 @@ h3{font-size:16px;font-weight:700}
 .carousel-item .noimg{width:100%;height:90px;border-radius:var(--r-sm);background:var(--bg-soft);display:flex;align-items:center;justify-content:center;font-size:36px;color:var(--muted-soft)}
 .carousel-item h5{font-size:12px;font-weight:700;margin:8px 4px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .carousel-item .cp{font-size:14px;font-weight:800;color:var(--primary);margin-bottom:8px}
-.cartbar{position:fixed;bottom:20px;left:16px;right:16px;max-width:860px;margin:0 auto;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:14px 20px;border-radius:var(--r-lg);display:flex;justify-content:space-between;align-items:center;box-shadow:0 12px 32px rgba(16,185,129,0.4);cursor:pointer;font-weight:800;z-index:30}
+@keyframes slideUp{from{transform:translateY(120px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes slideDown{to{transform:translateY(120px);opacity:0}}
+.cartbar{position:fixed;bottom:20px;left:16px;right:16px;max-width:860px;margin:0 auto;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:14px 20px;border-radius:var(--r-lg);display:flex;justify-content:space-between;align-items:center;box-shadow:0 12px 32px rgba(16,185,129,0.4);cursor:pointer;font-weight:800;z-index:30;animation:slideUp 0.3s ease}
 .cartbar .cart-info{display:flex;align-items:center;gap:10px}
 .cartbar .cart-count{background:rgba(255,255,255,0.25);padding:4px 10px;border-radius:var(--r-full);font-size:12px;font-weight:800}
 .shop-header{background:linear-gradient(135deg,#10b981 0%,#059669 60%,#047857 100%);color:#fff;padding:24px 20px 32px;border-radius:0 0 var(--r-2xl) var(--r-2xl);position:sticky;top:0;z-index:20}
@@ -1481,16 +1483,28 @@ function shopCartItems(){
   }).filter(Boolean);
 }
 function shopCartBar(){
-  document.querySelector('.cartbar')?.remove();
-  if(shopTab !== 'shop') return;
+  const existing = document.querySelector('.cartbar');
+  if(shopTab !== 'shop'){
+    if(existing){ existing.style.animation = 'slideDown 0.25s ease forwards'; setTimeout(()=>existing.remove(), 250); }
+    return;
+  }
   const items = shopCartItems();
-  if(!items.length) return;
+  if(!items.length){
+    if(existing){ existing.style.animation = 'slideDown 0.25s ease forwards'; setTimeout(()=>existing.remove(), 250); }
+    return;
+  }
   const total = items.reduce((s,x)=>s+x.total,0);
   const count = items.reduce((s,x)=>s+x.q,0);
+  if(existing){
+    // Just update numbers, keep visible
+    existing.querySelector('.cart-count').textContent = count;
+    existing.querySelector('.cart-total-amount').textContent = money(total);
+    return;
+  }
   const bar = document.createElement('div');
   bar.className = 'cartbar';
   bar.onclick = () => setShopTab('cart');
-  bar.innerHTML = `<div class="cart-info"><span style="font-size:20px">🛒</span><span class="cart-count">${count}</span><span>View Cart</span></div><div style="display:flex;align-items:center;gap:6px"><span>${money(total)}</span><span style="font-size:18px">→</span></div>`;
+  bar.innerHTML = `<div class="cart-info"><span style="font-size:20px">🛒</span><span class="cart-count">${count}</span><span>View Cart</span></div><div style="display:flex;align-items:center;gap:6px"><span class="cart-total-amount">${money(total)}</span><span style="font-size:18px">→</span></div>`;
   document.body.appendChild(bar);
 }
 
